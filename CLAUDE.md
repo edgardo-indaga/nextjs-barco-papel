@@ -323,6 +323,7 @@ git push origin main
 - **Styling**: Tailwind CSS v4 with shadcn/ui components
 - **State Management**: Zustand stores
 - **Rich Text**: TipTap editor
+- **Analytics**: Google Analytics 4 con Realtime API
 - **Runtime**: Bun preferred, Node.js supported
 
 ### App Router Structure
@@ -475,6 +476,7 @@ No formal testing setup exists - consider adding testing infrastructure for new 
 - Requires PostgreSQL database
 - Uses Vercel Blob for file storage
 - Environment variables for NextAuth, database, and email (Brevo)
+- Google Analytics 4 configuration with Realtime API access
 - Spanish locale support (es-ES)
 
 ### Email Configuration Variables
@@ -490,6 +492,57 @@ ADMIN_NOTIFICATION_EMAIL="tu-email@ejemplo.com"  # Email que recibe notificacion
 # Newsletter Admin Notifications
 NEWSLETTER_ADMIN_EMAIL="tu-email@ejemplo.com"    # Email que recibe notificaciones de nuevas suscripciones
 ```
+
+### Google Analytics 4 Configuration Variables
+
+```bash
+# Google Analytics 4 Data API
+GOOGLE_ANALYTICS_PROPERTY_ID="tu-property-id-aqui"
+GOOGLE_SERVICE_ACCOUNT_KEY='{
+  "type": "service_account",
+  "project_id": "tu-proyecto-ga4",
+  "private_key_id": "...",
+  "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+  "client_email": "analytics@tu-proyecto-ga4.iam.gserviceaccount.com",
+  "client_id": "...",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token"
+}'
+
+# Configuración optimizada
+ANALYTICS_REFRESH_INTERVAL=120000 # 2 minutos para datos más frescos
+```
+
+### Configuración Analytics Optimizada
+
+#### Métricas Disponibles
+
+**Datos Históricos (actualización cada 2 minutos):**
+
+- `sessions`: Total sesiones últimos 30 días
+- `pageViews`: Total páginas vistas últimos 30 días
+- `engagementRate`: Tasa de compromiso promedio
+- `userEngagementDuration`: Duración promedio de compromiso
+- `topPages`: Páginas más visitadas con métricas detalladas
+- `devices`: Distribución por tipo de dispositivo
+- `trafficSources`: Fuentes de tráfico principales
+
+#### Dashboard Optimizado
+
+El dashboard analytics muestra datos históricos confiables:
+
+- **Fila 1**: Métricas principales (sesiones, páginas vistas, tasa de compromiso)
+- **Fila 2**: Gráfico de tendencias históricas (30 días)
+- **Fila 3**: Top páginas más visitadas + distribución de dispositivos
+- **Footer**: Timestamp de última actualización y frecuencia de refresh
+
+#### Componentes Principales
+
+- `MetricCard`: Cards optimizadas para métricas históricas
+- `TrendChart`: Gráfico de evolución temporal
+- `TopPagesTable`: Tabla de páginas más visitadas
+- `DevicePieChart`: Distribución por dispositivos
+- `useAnalytics`: Hook principal para gestión de datos
 
 ## Code Quality
 

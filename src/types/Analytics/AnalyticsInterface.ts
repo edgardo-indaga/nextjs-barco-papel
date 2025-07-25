@@ -44,6 +44,13 @@ export interface TrafficSourceData {
     percentage: number;
 }
 
+// Estado de configuración de Analytics
+export interface AnalyticsConfigurationStatus {
+    isConfigured: boolean;
+    missingVariables: string[];
+    error?: string;
+}
+
 // Datos completos del dashboard
 export interface AnalyticsDashboardData {
     metrics: AnalyticsMetrics;
@@ -52,6 +59,7 @@ export interface AnalyticsDashboardData {
     devices: DeviceData[];
     trafficSources: TrafficSourceData[];
     lastUpdated: string;
+    configurationStatus?: AnalyticsConfigurationStatus; // Para indicar problemas de configuración
 }
 
 // Parámetros para queries de Analytics

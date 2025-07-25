@@ -77,7 +77,7 @@ export default function Cartelera() {
                 <>
                     <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mb-12 md:gap-8 lg:grid-cols-3">
                         {eventsToShow.map((event) => (
-                            <article key={event.id}>
+                            <article key={event.id} className="h-[520px] flex flex-col sm:h-[580px] md:h-[640px]">
                                 <div className="mb-[8px] md:mb-[10px]">
                                     <h3 className="font-basic-sans text-negro text-[16px] font-semibold sm:text-[17px] md:text-[18px]">
                                         {event.eventCategory?.name || 'Sin categoría'}
@@ -92,16 +92,6 @@ export default function Cartelera() {
                                             fill
                                             className="object-cover"
                                         />
-                                        <div className="absolute right-4 bottom-4 rounded-lg bg-pink-500 px-[12px] py-1 font-bold text-white sm:px-[16px] sm:py-1.5 md:px-[20px] md:py-2">
-                                            <div className="flex flex-col items-center">
-                                                <div className="text-[14px] uppercase sm:text-[16px] md:text-[20px]">
-                                                    {getMonthAbbreviation(event.date)}
-                                                </div>
-                                                <div className="text-[20px] leading-none sm:text-[24px] md:text-[28px]">
-                                                    {event.date.split(' ')[0]}
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 ) : (
                                     <div className="relative flex h-[200px] w-full items-center justify-center rounded-[10px] border-2 border-black bg-gray-200 sm:h-[240px] md:h-[280px]">
@@ -113,68 +103,75 @@ export default function Cartelera() {
                                                 Evento
                                             </div>
                                         </div>
-                                        <div className="absolute top-4 right-4 rounded-lg bg-pink-500 px-2 py-1 font-bold text-white sm:px-3 sm:py-2">
-                                            <div className="text-[10px] uppercase sm:text-xs">
-                                                {getMonthAbbreviation(event.date)}
-                                            </div>
-                                            <div className="text-sm leading-none sm:text-lg">
-                                                {event.date.split(' ')[0]}
-                                            </div>
-                                        </div>
                                     </div>
                                 )}
 
-                                <div className="px-[4px] py-[12px] sm:px-[5px] sm:py-[14px] md:px-[6px] md:py-[16px]">
-                                    <h2 className="font-basic-sans text-negro mb-[12px] text-[18px] leading-[22px] font-normal sm:text-[19px] sm:leading-[23px] md:mb-[15px] md:text-[20px] md:leading-[24px]">
-                                        {event.name}
-                                    </h2>
+                                <div className="flex-1 flex flex-col px-[4px] py-[12px] sm:px-[5px] sm:py-[14px] md:px-[6px] md:py-[16px]">
+                                    <div className="flex-1">
+                                        <h2 className="font-basic-sans text-negro mb-[12px] h-[50px] text-[18px] leading-[22px] font-normal sm:text-[19px] sm:leading-[23px] md:mb-[15px] md:text-[20px] md:leading-[24px]">
+                                            {event.name.length > 60
+                                                ? `${event.name.substring(0, 63)}...`
+                                                : event.name}
+                                        </h2>
 
-                                    {event.venue && event.venue !== '' && (
-                                        <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
-                                            <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                Lugar:
-                                            </h4>
-                                            <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                {event.venue}
-                                            </h4>
-                                        </div>
-                                    )}
+                                        {event.venue && event.venue !== '' && (
+                                            <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
+                                                <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    Lugar:
+                                                </h4>
+                                                <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    {event.venue}
+                                                </h4>
+                                            </div>
+                                        )}
 
-                                    {event.showTime && event.showTime !== 'Sin hora' && (
-                                        <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
-                                            <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                Hora:
-                                            </h4>
-                                            <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                {event.showTime}
-                                            </h4>
-                                        </div>
-                                    )}
+                                        {event.eventDays && event.eventDays !== '' && (
+                                            <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
+                                                <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    Día/s:
+                                                </h4>
+                                                <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    {event.eventDays}
+                                                </h4>
+                                            </div>
+                                        )}
 
-                                    {event.audienceType && event.audienceType !== '' && (
-                                        <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
-                                            <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                Público:
-                                            </h4>
-                                            <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                {event.audienceType}
-                                            </h4>
-                                        </div>
-                                    )}
+                                        {event.showTime && event.showTime !== 'Sin hora' && (
+                                            <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
+                                                <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    Hora:
+                                                </h4>
+                                                <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    {event.showTime}
+                                                </h4>
+                                            </div>
+                                        )}
 
-                                    {event.price && event.price !== '' && (
-                                        <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
-                                            <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                Costo:
-                                            </h4>
-                                            <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
-                                                ${event.price}
-                                            </h4>
-                                        </div>
-                                    )}
+                                        {event.audienceType && event.audienceType !== '' && (
+                                            <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
+                                                <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    Público:
+                                                </h4>
+                                                <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    {event.audienceType}
+                                                </h4>
+                                            </div>
+                                        )}
+
+                                        {event.price && event.price !== '' && (
+                                            <div className="flex flex-row py-[3px] sm:py-[4px] md:py-[5px]">
+                                                <h4 className="font-basic-sans mr-[5px] text-[16px] leading-[16px] font-normal text-[#575756] sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    Costo:
+                                                </h4>
+                                                <h4 className="font-basic-sans text-negro text-[16px] leading-[16px] font-normal italic sm:text-[17px] sm:leading-[17px] md:text-[18px] md:leading-[18px]">
+                                                    ${event.price}
+                                                </h4>
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {event.linkUrl && event.linkUrl !== '' && (
-                                        <div className="mt-[20px] flex justify-center sm:mt-[25px] md:mt-[30px]">
+                                        <div className="mt-auto pt-[20px] flex justify-center sm:pt-[25px] md:pt-[30px]">
                                             <a
                                                 href={event.linkUrl}
                                                 target="_blank"

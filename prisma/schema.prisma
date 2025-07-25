@@ -216,9 +216,11 @@ model EventeCalendar {
     image           String?
     date            DateTime
     venue           String?
-    showTime        String?         @db.VarChar(5)
+    eventDays       String?
+    showTime        String?
     audienceType    String?
-    price           Decimal?        @db.Decimal(10, 2)
+    price           String?
+    state           Int             @default(1)
     linkUrl         String?
     eventCategoryId String
     eventCategory   EventCategories @relation(fields: [eventCategoryId], references: [id], onDelete: Cascade)

@@ -5,8 +5,12 @@ import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { deleteEvent } from '@/actions/Administration/EventCalendars';
-import { BtnDeleteCell, BtnEditCell } from '@/components/BtnActionCell/BtnActionCell';
+import { deleteEvent, toggleEventState } from '@/actions/Administration/EventCalendars';
+import {
+    BtnDeleteCell,
+    BtnEditCell,
+    BtnToggleStateCell,
+} from '@/components/BtnActionCell/BtnActionCell';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -58,6 +62,27 @@ function ActionCell({ row, refreshTable }: ActionCellProps) {
         }
     };
 
+    const handleToggleState = async (eventId: string) => {
+        try {
+            const result = await toggleEventState(eventId);
+            if (result.success) {
+                refreshTable();
+                toast.success('Estado Cambiado', {
+                    description: result.message,
+                });
+            } else {
+                toast.error('Error', {
+                    description: result.error || 'No se pudo cambiar el estado del evento',
+                });
+            }
+        } catch (error) {
+            console.error('Error al cambiar estado del evento', error);
+            toast.error('Error', {
+                description: 'Ocurrió un error al cambiar el estado del evento',
+            });
+        }
+    };
+
     return (
         <>
             <DropdownMenu>
@@ -73,6 +98,14 @@ function ActionCell({ row, refreshTable }: ActionCellProps) {
                     <BtnEditCell
                         onAction={() => setOpenEditEvent(true)}
                         label="Editar Evento"
+                        permission={['Editar']}
+                        className="cursor-pointer"
+                    />
+                    <BtnToggleStateCell
+                        onToggle={handleToggleState}
+                        label="Evento"
+                        itemId={eventId}
+                        currentState={row.original.state}
                         permission={['Editar']}
                         className="cursor-pointer"
                     />
@@ -136,6 +169,15 @@ export const EventCalendarsColumns = (
         },
     },
     {
+        id: 'Dias',
+        accessorKey: 'eventDays',
+        header: () => <div>Días</div>,
+        cell: ({ row }) => {
+            const eventDays = row.original.eventDays || 'No especificado';
+            return <div className="text-sm">{eventDays}</div>;
+        },
+    },
+    {
         id: 'Hora',
         accessorKey: 'showTime',
         header: () => <div>Hora</div>,
@@ -149,8 +191,33 @@ export const EventCalendarsColumns = (
         accessorKey: 'price',
         header: () => <div>Precio</div>,
         cell: ({ row }) => {
-            const price = `${row.original.price || 'Gratis'}`;
-            return <div>CLP$ {price}</div>;
+            const price = row.original.price || 'Gratis';
+            return <div className="text-sm">{price}</div>;
+        },
+    },
+    {
+        id: 'Estado',
+        accessorKey: 'state',
+        header: () => <div>Estado</div>,
+        cell: ({ row }) => {
+            const state = row.original.state;
+            const isActive = state === 1;
+            return (
+                <div className="flex items-center gap-2">
+                    <div
+                        className={`h-2 w-2 rounded-full ${
+                            isActive ? 'bg-green-500' : 'bg-red-500'
+                        }`}
+                    />
+                    <span
+                        className={`text-xs font-medium ${
+                            isActive ? 'text-green-700' : 'text-red-700'
+                        }`}
+                    >
+                        {isActive ? 'Activo' : 'Inactivo'}
+                    </span>
+                </div>
+            );
         },
     },
     {

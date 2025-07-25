@@ -9,6 +9,7 @@ import {
     getAnalyticsClient,
     getAnalyticsPublicConfig,
     ANALYTICS_CONSTANTS,
+    checkAnalyticsConfiguration,
 } from '@/lib/analytics/client';
 import {
     getDateRanges,
@@ -27,6 +28,7 @@ import type {
     DeviceData,
     TrafficSourceData,
     AnalyticsQueryParams,
+    AnalyticsConfigurationStatus,
 } from '@/types/Analytics/AnalyticsInterface';
 
 // Obtener métricas principales del dashboard
@@ -208,6 +210,31 @@ export async function getAnalyticsDashboardData(params?: {
     startDate?: string;
     endDate?: string;
 }): Promise<AnalyticsDashboardData> {
+    // Verificar configuración antes de hacer cualquier consulta
+    const configCheck = checkAnalyticsConfiguration();
+    if (!configCheck.isConfigured) {
+        // Retornar respuesta con datos vacíos pero información de configuración
+        return {
+            metrics: {
+                sessions: 0,
+                pageViews: 0,
+                engagementRate: 0,
+                userEngagementDuration: 0,
+                activeUsers: 0,
+            },
+            trends: [],
+            topPages: [],
+            devices: [],
+            trafficSources: [],
+            lastUpdated: new Date().toISOString(),
+            configurationStatus: {
+                isConfigured: false,
+                missingVariables: configCheck.missingVariables,
+                error: configCheck.error,
+            },
+        };
+    }
+
     try {
         // Usar últimos 30 días por defecto
         const dateRanges = getDateRanges();
@@ -230,6 +257,10 @@ export async function getAnalyticsDashboardData(params?: {
             devices,
             trafficSources,
             lastUpdated: new Date().toISOString(),
+            configurationStatus: {
+                isConfigured: true,
+                missingVariables: [],
+            },
         };
     } catch (error) {
         console.error('Error al obtener datos del dashboard:', error);

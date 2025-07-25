@@ -1,4 +1,4 @@
-import { Cog, Eye, FilePenLine, Key, Trash2 } from 'lucide-react';
+import { CheckCircle, Cog, Eye, FilePenLine, Key, Trash2, XCircle } from 'lucide-react';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { useUserPermissionStore } from '@/store/useUserPermissionStore';
 
@@ -15,6 +15,15 @@ interface BtnDeleteCellProps {
     className?: string;
     permission?: string[];
     itemId: string;
+}
+
+interface BtnToggleStateCellProps {
+    onToggle: (id: string) => void;
+    label: string;
+    className?: string;
+    permission?: string[];
+    itemId: string;
+    currentState: number;
 }
 
 // Hook para verificar permisos fácilmente
@@ -128,6 +137,41 @@ export function BtnConfigCell({
         >
             <Cog className="mr-1 h-4 w-4" />
             {label}
+        </DropdownMenuItem>
+    );
+}
+
+export function BtnToggleStateCell({
+    onToggle,
+    label,
+    className,
+    permission = ['Editar'],
+    itemId,
+    currentState,
+}: BtnToggleStateCellProps) {
+    const permitted = useHasPermission(permission);
+    if (!permitted) return null;
+
+    const handleToggle = () => {
+        onToggle(itemId);
+    };
+
+    const isActive = currentState === 1;
+    const dynamicLabel = isActive ? `Desactivar ${label}` : `Activar ${label}`;
+    const iconColor = isActive ? 'text-orange-600' : 'text-green-600';
+
+    return (
+        <DropdownMenuItem
+            onClick={handleToggle}
+            className={`${className} ${iconColor} ${!permitted ? 'cursor-not-allowed opacity-50' : ''}`}
+            disabled={!permitted}
+        >
+            {isActive ? (
+                <XCircle className="mr-1 h-4 w-4" />
+            ) : (
+                <CheckCircle className="mr-1 h-4 w-4" />
+            )}
+            {dynamicLabel}
         </DropdownMenuItem>
     );
 }

@@ -14,9 +14,11 @@ export async function createEvent(formData: FormData) {
         const imageFile = formData.get('image') as File | null;
         const date = formData.get('date') as string;
         const venue = formData.get('venue') as string | null;
+        const eventDays = formData.get('eventDays') as string | null;
         const showTime = formData.get('showTime') as string | null;
         const audienceType = formData.get('audienceType') as string | null;
         const price = formData.get('price') as string | null;
+        const state = formData.get('state') ? Number.parseInt(formData.get('state') as string) : 1;
         const linkUrl = formData.get('linkUrl') as string | null; // Nuevo campo
         const eventCategoryId = formData.get('eventCategoryId') as string; // Nuevo campo requerido
 
@@ -43,12 +45,8 @@ export async function createEvent(formData: FormData) {
         // Convertir la fecha a formato ISO-8601 completo
         const dateValue = new Date(date);
 
-        // Convertir precio a decimal si existe
-        let priceValue: number | null = null;
-        if (price && price.trim() !== '') {
-            const parsedPrice = Number.parseFloat(price);
-            priceValue = Number.isNaN(parsedPrice) ? null : parsedPrice;
-        }
+        // El precio ahora se maneja como string
+        const priceValue = price && price.trim() !== '' ? price.trim() : null;
 
         const response = await prisma.eventeCalendar.create({
             data: {
@@ -56,9 +54,11 @@ export async function createEvent(formData: FormData) {
                 image: imageUrl,
                 date: dateValue,
                 venue,
+                eventDays,
                 showTime,
                 audienceType,
                 price: priceValue,
+                state,
                 linkUrl, // Nuevo campo
                 eventCategoryId, // Nuevo campo
             },
@@ -82,11 +82,7 @@ export async function createEvent(formData: FormData) {
 
         revalidatePath('/admin/administration/events');
 
-        // Convertir Decimal a número para serialización
-        return {
-            ...response,
-            price: response.price ? response.price.toNumber() : null,
-        };
+        return response;
     } catch (error) {
         console.error('Error creating event', error);
         throw error;
@@ -133,11 +129,7 @@ export async function deleteEvent(id: string) {
 
         revalidatePath('/admin/administration/events');
 
-        // Convertir Decimal a número para serialización
-        return {
-            ...response,
-            price: response.price ? response.price.toNumber() : null,
-        };
+        return response;
     } catch (error) {
         console.error('Error delete event', error);
         throw error;
@@ -162,10 +154,14 @@ export async function updateEvent(id: string, formData: FormData) {
         const imageFile = formData.get('image') as File | null;
         const dateString = formData.get('date') as string;
         const venue = (formData.get('venue') as string | null) || currentEvent.venue;
+        const eventDays = (formData.get('eventDays') as string | null) || currentEvent.eventDays;
         const showTime = (formData.get('showTime') as string | null) || currentEvent.showTime;
         const audienceType =
             (formData.get('audienceType') as string | null) || currentEvent.audienceType;
         const priceString = formData.get('price') as string;
+        const state = formData.get('state')
+            ? Number.parseInt(formData.get('state') as string)
+            : currentEvent.state;
         const linkUrl = (formData.get('linkUrl') as string | null) || currentEvent.linkUrl; // Nuevo campo
         const eventCategoryId =
             (formData.get('eventCategoryId') as string) || currentEvent.eventCategoryId; // Nuevo campo
@@ -176,31 +172,30 @@ export async function updateEvent(id: string, formData: FormData) {
         }
 
         const dateValue = dateString ? new Date(dateString) : currentEvent.date;
-        let priceValue: number;
-        if (priceString && priceString.trim() !== '') {
-            const parsedPrice = Number.parseFloat(priceString);
-            priceValue = Number.isNaN(parsedPrice) ? Number(currentEvent.price) : parsedPrice;
-        } else {
-            priceValue = Number(currentEvent.price);
-        }
+        const priceValue =
+            priceString && priceString.trim() !== '' ? priceString.trim() : currentEvent.price;
 
         const updateData: {
             name: string;
             image?: string | null;
             date: Date;
             venue: string | null;
+            eventDays: string | null;
             showTime: string | null;
             audienceType: string | null;
-            price: number;
+            price: string | null;
+            state: number;
             linkUrl: string | null;
             eventCategoryId: string;
         } = {
             name,
             date: dateValue,
             venue,
+            eventDays,
             showTime,
             audienceType,
             price: priceValue,
+            state,
             linkUrl,
             eventCategoryId,
         };
@@ -269,13 +264,63 @@ export async function updateEvent(id: string, formData: FormData) {
 
         revalidatePath('/admin/administration/events');
 
-        // Convertir Decimal a número para serialización
-        return {
-            ...response,
-            price: response.price ? response.price.toNumber() : null,
-        };
+        return response;
     } catch (error) {
         console.error('Error updating event', error);
+        throw error;
+    }
+}
+
+export async function toggleEventState(id: string) {
+    try {
+        if (!id) {
+            return { error: 'Event ID is required' };
+        }
+
+        const currentEvent = await prisma.eventeCalendar.findUnique({
+            where: { id },
+            select: { id: true, name: true, state: true },
+        });
+
+        if (!currentEvent) {
+            return { error: 'Event does not exist' };
+        }
+
+        // Toggle state: 1 → 0 or 0 → 1
+        const newState = currentEvent.state === 1 ? 0 : 1;
+
+        const response = await prisma.eventeCalendar.update({
+            where: { id },
+            data: { state: newState },
+        });
+
+        const session = await getServerSession(authOptions);
+        await logAuditEvent({
+            action: AUDIT_ACTIONS.EVENTS.UPDATE,
+            entity: AUDIT_ENTITIES.EVENTS,
+            entityId: id,
+            description: `Event "${currentEvent.name}" state changed from ${currentEvent.state === 1 ? 'Active' : 'Inactive'} to ${newState === 1 ? 'Active' : 'Inactive'}`,
+            metadata: {
+                eventId: id,
+                name: currentEvent.name,
+                previousState: currentEvent.state,
+                newState: newState,
+            },
+            userId: session?.user?.id,
+            userName: session?.user?.name
+                ? `${session.user.name} ${session.user.lastName || ''}`.trim()
+                : undefined,
+        });
+
+        revalidatePath('/admin/administration/events');
+
+        return {
+            success: true,
+            newState: newState,
+            message: `Evento ${newState === 1 ? 'activado' : 'desactivado'} correctamente`,
+        };
+    } catch (error) {
+        console.error('Error toggling event state', error);
         throw error;
     }
 }

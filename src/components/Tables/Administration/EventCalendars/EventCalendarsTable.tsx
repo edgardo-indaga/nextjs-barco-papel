@@ -22,8 +22,10 @@ export default function EventCalendarsTable() {
                 name: event.name,
                 date: event.date,
                 venue: event.venue,
+                eventDays: event.eventDays,
                 showTime: event.showTime,
                 price: event.price,
+                state: event.state,
                 eventCategoryId: event.eventCategoryId,
                 eventCategory: event.eventCategory, // Incluir la categoría completa
                 createdAt: event.createdAt,

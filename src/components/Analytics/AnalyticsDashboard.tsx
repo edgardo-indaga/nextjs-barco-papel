@@ -1,6 +1,6 @@
 /**
  * Componente AnalyticsDashboard - Dashboard principal de Google Analytics
- * Integra todos los componentes de visualización con datos reales
+ * Dashboard optimizado con datos históricos confiables
  */
 
 'use client';
@@ -15,6 +15,7 @@ import TopPagesTable from './TopPagesTable';
 import DevicePieChart from './DevicePieChart';
 import LoadingCard from './LoadingCard';
 import ErrorCard from './ErrorCard';
+import NoConfigCard from './NoConfigCard';
 import { cn } from '@/lib/utils';
 
 interface AnalyticsDashboardProps {
@@ -28,16 +29,21 @@ export default function AnalyticsDashboard({
     startDate,
     endDate,
 }: AnalyticsDashboardProps) {
+    // Hook optimizado para datos históricos con refresh mejorado
     const { data, error, isLoading, isValidating, mutate } = useAnalytics({
         startDate,
         endDate,
-        refreshInterval: 5 * 60 * 1000, // 5 minutos
+        refreshInterval: 2 * 60 * 1000, // 2 minutos para datos más frescos
     });
 
     // Función para refrescar manualmente
     const handleRefresh = () => {
         mutate();
     };
+
+    // Verificar si la configuración está incompleta usando los datos
+    const configStatus = data?.configurationStatus;
+    const isConfigIncomplete = configStatus && !configStatus.isConfigured;
 
     // Mostrar loading en la primera carga
     if (isLoading && !data) {
@@ -70,7 +76,30 @@ export default function AnalyticsDashboard({
         );
     }
 
-    // Mostrar error si hay problemas
+    // Mostrar configuración incompleta
+    if (isConfigIncomplete) {
+        return (
+            <div className={cn('space-y-6', className)}>
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-bold">Dashboard de Analytics</h2>
+                        <p className="text-muted-foreground">
+                            Configuración de Google Analytics requerida
+                        </p>
+                    </div>
+                </div>
+
+                {/* Card de configuración */}
+                <NoConfigCard
+                    missingVariables={configStatus?.missingVariables || []}
+                    error={configStatus?.error}
+                />
+            </div>
+        );
+    }
+
+    // Mostrar error de API si hay problemas (no de configuración)
     if (error && !data) {
         return (
             <div className={cn('space-y-6', className)}>
@@ -106,7 +135,8 @@ export default function AnalyticsDashboard({
                 <div className="space-y-2">
                     <h2 className="text-2xl font-bold">Dashboard de Analytics</h2>
                     <div className="text-muted-foreground flex items-center gap-4 text-sm">
-                        <span>
+                        <span className="flex items-center gap-2">
+                            <Clock className="h-3 w-3" />
                             Última actualización:{' '}
                             {data?.lastUpdated
                                 ? new Date(data.lastUpdated).toLocaleString('es-ES')
@@ -135,7 +165,7 @@ export default function AnalyticsDashboard({
                     title="Sesiones"
                     value={data?.metrics?.sessions || 0}
                     format="number"
-                    description="Número total de sesiones de usuarios"
+                    description="Total de sesiones (últimos 30 días)"
                     icon={<Activity className="h-4 w-4" />}
                 />
 
@@ -143,7 +173,7 @@ export default function AnalyticsDashboard({
                     title="Páginas Vistas"
                     value={data?.metrics?.pageViews || 0}
                     format="number"
-                    description="Visualizaciones totales de páginas"
+                    description="Visualizaciones totales de páginas (últimos 30 días)"
                     icon={<Eye className="h-4 w-4" />}
                 />
 
@@ -198,7 +228,7 @@ export default function AnalyticsDashboard({
             {/* Footer con información adicional */}
             <div className="text-muted-foreground border-t pt-4 text-center text-xs">
                 <p>
-                    Datos proporcionados por Google Analytics 4 • Actualización automática cada 5
+                    Datos proporcionados por Google Analytics 4 • Actualización automática cada 2
                     minutos • Última sincronización:{' '}
                     {data?.lastUpdated
                         ? new Date(data.lastUpdated).toLocaleTimeString('es-ES')

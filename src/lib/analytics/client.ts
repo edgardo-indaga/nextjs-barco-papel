@@ -92,6 +92,78 @@ export const validateAnalyticsConfig = (): boolean => {
     }
 };
 
+// Verificar si la configuración de Analytics está completa
+export const checkAnalyticsConfiguration = (): {
+    isConfigured: boolean;
+    missingVariables: string[];
+    error?: string;
+} => {
+    const missingVariables: string[] = [];
+
+    // Verificar variables de entorno requeridas
+    if (!process.env.GOOGLE_ANALYTICS_PROPERTY_ID) {
+        missingVariables.push('GOOGLE_ANALYTICS_PROPERTY_ID');
+    }
+
+    if (!process.env.GOOGLE_SERVICE_ACCOUNT_KEY) {
+        missingVariables.push('GOOGLE_SERVICE_ACCOUNT_KEY');
+    }
+
+    // Si faltan variables básicas, no validar JSON
+    if (missingVariables.length > 0) {
+        return {
+            isConfigured: false,
+            missingVariables,
+        };
+    }
+
+    // Validar formato JSON del service account
+    try {
+        const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY!;
+        const credentials = JSON.parse(serviceAccountKey);
+
+        const requiredFields = [
+            'type',
+            'project_id',
+            'private_key_id',
+            'private_key',
+            'client_email',
+            'client_id',
+        ];
+
+        const missingFields = requiredFields.filter((field) => !credentials[field]);
+
+        if (missingFields.length > 0) {
+            return {
+                isConfigured: false,
+                missingVariables: missingFields.map(
+                    (field) => `GOOGLE_SERVICE_ACCOUNT_KEY.${field}`,
+                ),
+                error: `Service Account JSON incompleto: faltan campos ${missingFields.join(', ')}`,
+            };
+        }
+
+        if (credentials.type !== 'service_account') {
+            return {
+                isConfigured: false,
+                missingVariables: ['GOOGLE_SERVICE_ACCOUNT_KEY.type'],
+                error: 'El JSON debe ser de tipo "service_account"',
+            };
+        }
+
+        return {
+            isConfigured: true,
+            missingVariables: [],
+        };
+    } catch (error) {
+        return {
+            isConfigured: false,
+            missingVariables: ['GOOGLE_SERVICE_ACCOUNT_KEY'],
+            error: `JSON inválido en GOOGLE_SERVICE_ACCOUNT_KEY: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+        };
+    }
+};
+
 // Constantes para queries comunes
 export const ANALYTICS_CONSTANTS = {
     // Dimensiones comunes

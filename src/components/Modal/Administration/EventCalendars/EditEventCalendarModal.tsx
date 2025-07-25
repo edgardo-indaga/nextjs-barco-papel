@@ -103,9 +103,11 @@ export default function EditEventCalendarModal({
                         setEventData(event);
                         setValue('name', event.name);
                         setValue('venue', event.venue || '');
+                        setValue('eventDays', event.eventDays || '');
                         setValue('showTime', event.showTime || '');
                         setValue('audienceType', event.audienceType || '');
                         setValue('price', event.price || '');
+                        setValue('state', event.state);
                         setValue('linkUrl', event.linkUrl || '');
                         setValue('eventCategoryId', event.eventCategoryId);
 
@@ -161,6 +163,9 @@ export default function EditEventCalendarModal({
         if (data.venue) {
             formData.append('venue', data.venue);
         }
+        if (data.eventDays) {
+            formData.append('eventDays', data.eventDays);
+        }
         if (data.showTime) {
             formData.append('showTime', data.showTime);
         }
@@ -173,6 +178,9 @@ export default function EditEventCalendarModal({
         if (data.linkUrl) {
             formData.append('linkUrl', data.linkUrl);
         }
+
+        // Estado del evento
+        formData.append('state', String(data.state ?? 1));
 
         // Agregar imagen actual como campo hidden para preservarla
         if (eventData?.image) {
@@ -287,10 +295,23 @@ export default function EditEventCalendarModal({
                             </div>
 
                             <div className="mb-[15px]">
+                                <Label className="custom-label">Días del Evento</Label>
+                                <Input
+                                    id="eventDays"
+                                    type="text"
+                                    placeholder="Lunes a Viernes, Fines de semana, etc."
+                                    className="w-full"
+                                    autoComplete="off"
+                                    {...register('eventDays')}
+                                />
+                            </div>
+
+                            <div className="mb-[15px]">
                                 <Label className="custom-label">Hora del Espectáculo</Label>
                                 <Input
                                     id="showTime"
-                                    type="time"
+                                    type="text"
+                                    placeholder="14:30, A las 8 PM, Horario a confirmar, etc."
                                     className="w-full"
                                     autoComplete="off"
                                     {...register('showTime')}
@@ -313,12 +334,35 @@ export default function EditEventCalendarModal({
                                 <Label className="custom-label">Precio</Label>
                                 <Input
                                     id="price"
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="Precio del evento"
+                                    type="text"
+                                    placeholder="$10.000, Gratis, Precio a consultar, etc."
                                     className="w-full"
                                     autoComplete="off"
                                     {...register('price')}
+                                />
+                            </div>
+
+                            <div className="mb-[15px]">
+                                <Label className="custom-label">Estado</Label>
+                                <Select
+                                    value={String(watch('state') ?? 1)}
+                                    onValueChange={(value) =>
+                                        setValue('state', Number.parseInt(value))
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Selecciona el estado" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1">
+                                            Activo (Visible al público)
+                                        </SelectItem>
+                                        <SelectItem value="0">Inactivo (Oculto)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <input
+                                    type="hidden"
+                                    {...register('state', { valueAsNumber: true })}
                                 />
                             </div>
 

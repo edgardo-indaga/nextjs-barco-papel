@@ -18,10 +18,7 @@ const DATE_FORMATTER = new Intl.DateTimeFormat('es-ES', {
     year: 'numeric',
     timeZone: 'UTC', // Force UTC to avoid timezone conversion
 });
-const PRICE_FORMATTER = (price: Prisma.Decimal | null) =>
-    price !== null && !Number.isNaN(price.toNumber())
-        ? Math.round(price.toNumber()).toLocaleString('es-ES')
-        : '';
+const PRICE_FORMATTER = (price: string | null) => price ?? 'Gratis';
 
 export async function getAllEvents(): Promise<EventeCalendarInterface[]> {
     try {
@@ -31,8 +28,10 @@ export async function getAllEvents(): Promise<EventeCalendarInterface[]> {
                 name: true,
                 date: true,
                 venue: true,
+                eventDays: true,
                 showTime: true,
                 price: true,
+                state: true,
                 linkUrl: true, // Agregando linkUrl que faltaba
                 eventCategoryId: true,
                 eventCategory: {
@@ -53,6 +52,7 @@ export async function getAllEvents(): Promise<EventeCalendarInterface[]> {
             ...event,
             date: DATEOTHER_FORMATTER.format(event.date),
             venue: event.venue ?? '',
+            eventDays: event.eventDays ?? '',
             showTime: event.showTime ?? 'Sin hora',
             price: PRICE_FORMATTER(event.price),
             linkUrl: event.linkUrl ?? '',
@@ -74,9 +74,11 @@ export async function getEventById(id: string): Promise<EventeCalendarUniqueInte
                 image: true,
                 date: true,
                 venue: true,
+                eventDays: true,
                 showTime: true,
                 audienceType: true,
                 price: true,
+                state: true,
                 linkUrl: true,
                 eventCategoryId: true,
                 eventCategory: {
@@ -96,6 +98,7 @@ export async function getEventById(id: string): Promise<EventeCalendarUniqueInte
             ...response,
             date: DATEOTHER_FORMATTER.format(response.date),
             venue: response.venue ?? '',
+            eventDays: response.eventDays ?? '',
             showTime: response.showTime ?? 'Sin hora',
             price: PRICE_FORMATTER(response.price),
             linkUrl: response.linkUrl ?? '',
@@ -118,9 +121,11 @@ export async function getEventByIdForEdit(
                 image: true,
                 date: true,
                 venue: true,
+                eventDays: true,
                 showTime: true,
                 audienceType: true,
                 price: true,
+                state: true,
                 linkUrl: true,
                 eventCategoryId: true,
                 eventCategory: {
@@ -140,6 +145,7 @@ export async function getEventByIdForEdit(
             ...response,
             date: response.date.toISOString(), // Return raw date for editing
             venue: response.venue ?? '',
+            eventDays: response.eventDays ?? '',
             showTime: response.showTime ?? 'Sin hora',
             price: PRICE_FORMATTER(response.price),
             linkUrl: response.linkUrl ?? '',
@@ -166,9 +172,11 @@ export async function getEventMonth(): Promise<EventeCalendarInterface[]> {
                 image: true,
                 date: true,
                 venue: true,
+                eventDays: true,
                 showTime: true,
                 audienceType: true,
                 price: true,
+                state: true,
                 linkUrl: true, // Nuevo campo
                 eventCategoryId: true, // Nuevo campo
                 eventCategory: {
@@ -185,6 +193,7 @@ export async function getEventMonth(): Promise<EventeCalendarInterface[]> {
                     gte: startOfToday,
                     lte: next30Days,
                 },
+                state: 1, // Solo eventos activos para consulta pública
             },
             orderBy: {
                 date: 'asc',
@@ -196,6 +205,7 @@ export async function getEventMonth(): Promise<EventeCalendarInterface[]> {
             ...event,
             date: DATEOTHER_FORMATTER.format(event.date),
             venue: event.venue ?? '',
+            eventDays: event.eventDays ?? '',
             showTime: event.showTime ?? 'Sin hora',
             audienceType: event.audienceType ?? '',
             price: PRICE_FORMATTER(event.price),
@@ -224,9 +234,11 @@ export async function getEventMonthLimited(limit = 3): Promise<EventeCalendarInt
                 image: true,
                 date: true,
                 venue: true,
+                eventDays: true,
                 showTime: true,
                 audienceType: true,
                 price: true,
+                state: true,
                 linkUrl: true,
                 eventCategoryId: true,
                 eventCategory: {
@@ -242,6 +254,7 @@ export async function getEventMonthLimited(limit = 3): Promise<EventeCalendarInt
                     gte: startOfToday,
                     lte: next30Days,
                 },
+                state: 1, // Solo eventos activos para consulta pública
             },
             orderBy: {
                 date: 'asc',
@@ -254,6 +267,7 @@ export async function getEventMonthLimited(limit = 3): Promise<EventeCalendarInt
             ...event,
             date: DATEOTHER_FORMATTER.format(event.date),
             venue: event.venue ?? '',
+            eventDays: event.eventDays ?? '',
             showTime: event.showTime ?? 'Sin hora',
             audienceType: event.audienceType ?? '',
             price: PRICE_FORMATTER(event.price),

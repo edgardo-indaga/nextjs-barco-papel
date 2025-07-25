@@ -120,6 +120,9 @@ export default function NewEventCalendarModal({ refreshAction }: UpdateData) {
         if (data.venue) {
             formData.append('venue', data.venue);
         }
+        if (data.eventDays) {
+            formData.append('eventDays', data.eventDays);
+        }
         if (data.showTime) {
             formData.append('showTime', data.showTime);
         }
@@ -132,6 +135,9 @@ export default function NewEventCalendarModal({ refreshAction }: UpdateData) {
         if (data.linkUrl) {
             formData.append('linkUrl', data.linkUrl); // Nuevo campo opcional
         }
+
+        // Estado del evento (por defecto activo = 1)
+        formData.append('state', String(data.state ?? 1));
 
         if (selectedImage) {
             formData.append('image', selectedImage);
@@ -220,7 +226,7 @@ export default function NewEventCalendarModal({ refreshAction }: UpdateData) {
                             </div>
 
                             <div className="mb-[15px]">
-                                <Label className="custom-label">Fecha</Label>
+                                <Label className="custom-label">Fecha de Publicación</Label>
                                 <Input
                                     id="date"
                                     type="date"
@@ -248,10 +254,23 @@ export default function NewEventCalendarModal({ refreshAction }: UpdateData) {
                             </div>
 
                             <div className="mb-[15px]">
+                                <Label className="custom-label">Día/s del Evento</Label>
+                                <Input
+                                    id="eventDays"
+                                    type="text"
+                                    placeholder="Lunes a Viernes, Fines de semana, etc."
+                                    className="w-full"
+                                    autoComplete="off"
+                                    {...register('eventDays')}
+                                />
+                            </div>
+
+                            <div className="mb-[15px]">
                                 <Label className="custom-label">Hora del Espectáculo</Label>
                                 <Input
                                     id="showTime"
-                                    type="time"
+                                    type="text"
+                                    placeholder="14:30, A las 8 PM, Horario a confirmar, etc."
                                     className="w-full"
                                     autoComplete="off"
                                     {...register('showTime')}
@@ -274,9 +293,8 @@ export default function NewEventCalendarModal({ refreshAction }: UpdateData) {
                                 <Label className="custom-label">Precio</Label>
                                 <Input
                                     id="price"
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="Precio del evento"
+                                    type="text"
+                                    placeholder="$10.000, Gratis, Precio a consultar, etc."
                                     className="w-full"
                                     autoComplete="off"
                                     {...register('price')}
@@ -292,6 +310,30 @@ export default function NewEventCalendarModal({ refreshAction }: UpdateData) {
                                     className="w-full"
                                     autoComplete="off"
                                     {...register('linkUrl')}
+                                />
+                            </div>
+
+                            <div className="mb-[15px]">
+                                <Label className="custom-label">Estado</Label>
+                                <Select
+                                    value={String(watch('state') ?? 1)}
+                                    onValueChange={(value) =>
+                                        setValue('state', Number.parseInt(value))
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Selecciona el estado" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="1">
+                                            Activo (Visible al público)
+                                        </SelectItem>
+                                        <SelectItem value="0">Inactivo (Oculto)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <input
+                                    type="hidden"
+                                    {...register('state', { valueAsNumber: true })}
                                 />
                             </div>
                         </div>

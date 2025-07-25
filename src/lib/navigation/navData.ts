@@ -19,7 +19,7 @@ export const navData = {
             roles: [],
         },
         {
-            title: 'Noticas',
+            title: 'Noticias',
             url: '/admin/administration/blog',
             icon: Newspaper,
             roles: [],
