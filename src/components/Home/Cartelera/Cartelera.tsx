@@ -77,7 +77,10 @@ export default function Cartelera() {
                 <>
                     <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:mb-12 md:gap-8 lg:grid-cols-3">
                         {eventsToShow.map((event) => (
-                            <article key={event.id} className="h-[520px] flex flex-col sm:h-[580px] md:h-[640px]">
+                            <article
+                                key={event.id}
+                                className="flex h-[520px] flex-col sm:h-[580px] md:h-[640px]"
+                            >
                                 <div className="mb-[8px] md:mb-[10px]">
                                     <h3 className="font-basic-sans text-negro text-[16px] font-semibold sm:text-[17px] md:text-[18px]">
                                         {event.eventCategory?.name || 'Sin categoría'}
@@ -106,7 +109,7 @@ export default function Cartelera() {
                                     </div>
                                 )}
 
-                                <div className="flex-1 flex flex-col px-[4px] py-[12px] sm:px-[5px] sm:py-[14px] md:px-[6px] md:py-[16px]">
+                                <div className="flex flex-1 flex-col px-[4px] py-[12px] sm:px-[5px] sm:py-[14px] md:px-[6px] md:py-[16px]">
                                     <div className="flex-1">
                                         <h2 className="font-basic-sans text-negro mb-[12px] h-[50px] text-[18px] leading-[22px] font-normal sm:text-[19px] sm:leading-[23px] md:mb-[15px] md:text-[20px] md:leading-[24px]">
                                             {event.name.length > 60
@@ -171,7 +174,7 @@ export default function Cartelera() {
                                     </div>
 
                                     {event.linkUrl && event.linkUrl !== '' && (
-                                        <div className="mt-auto pt-[20px] flex justify-center sm:pt-[25px] md:pt-[30px]">
+                                        <div className="mt-auto flex justify-center pt-[20px] sm:pt-[25px] md:pt-[30px]">
                                             <a
                                                 href={event.linkUrl}
                                                 target="_blank"

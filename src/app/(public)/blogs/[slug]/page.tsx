@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getBlogBySlug } from '@/actions/Administration/Blogs/queries';
+import { createMetaDescription } from '@/lib/utils';
 
 interface BlogPageProps {
     params: Promise<{
@@ -20,12 +21,23 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
         };
     }
 
+    // Crear descripción limpia sin HTML para meta tags
+    const cleanDescription = createMetaDescription(blog.description, 160);
+
     return {
         title: `${blog.name} | Barco de Papel`,
-        description: blog.description.slice(0, 160),
+        description: cleanDescription,
         openGraph: {
             title: blog.name,
-            description: blog.description.slice(0, 160),
+            description: cleanDescription,
+            images: blog.image ? [blog.image] : [],
+            url: `https://www.barcodepapel.cl/blogs/${slug}`,
+            type: 'article',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: blog.name,
+            description: cleanDescription,
             images: blog.image ? [blog.image] : [],
         },
     };

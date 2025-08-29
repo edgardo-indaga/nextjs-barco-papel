@@ -12,9 +12,10 @@
 ## Contenido Respaldado
 
 ✅ Todas las tablas del sistema:
+
 - Users, Roles, Permissions
 - Blogs, BlogCategories
-- EventeCalendar, EventCategories  
+- EventeCalendar, EventCategories
 - Teams, Sponsors, PrintedMaterials
 - Tickets, Newsletter
 - Audit logs y configuraciones
@@ -39,7 +40,7 @@ psql "DATABASE_URL" -c "\\i backup_20250724_195100.sql"
 ```sql
 -- Verificar conteo de registros principales
 SELECT 'Users' as tabla, COUNT(*) FROM "User";
-SELECT 'Blogs' as tabla, COUNT(*) FROM "Blog";  
+SELECT 'Blogs' as tabla, COUNT(*) FROM "Blog";
 SELECT 'Events' as tabla, COUNT(*) FROM "EventeCalendar";
 SELECT 'Teams' as tabla, COUNT(*) FROM "Team";
 ```
