@@ -1,22 +1,22 @@
 'use client';
 
-import { Eye, EyeOff } from 'lucide-react';
+import {Eye, EyeOff} from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import {useRouter} from 'next/navigation';
+import {signIn} from 'next-auth/react';
 import type React from 'react';
-import { useState } from 'react';
-import { type SubmitHandler, useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import {useState} from 'react';
+import {type SubmitHandler, useForm} from 'react-hook-form';
+import {toast} from 'sonner';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import type { LoginFormInputs } from '@/types/settings/Login/LoginFormInputs';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import {Input} from '@/components/ui/input';
+import {Label} from '@/components/ui/label';
+import {cn} from '@/lib/utils';
+import type {LoginFormInputs} from '@/types/settings/Login/LoginFormInputs';
 
-export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function LoginForm({className, ...props}: React.ComponentPropsWithoutRef<'div'>) {
     const [isPasswordHidden, setPasswordHidden] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [, setError] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
     } = useForm<LoginFormInputs>({
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
@@ -50,8 +50,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                         res.error === 'No users found'
                             ? 'Usuario no encontrado'
                             : res.error === 'Wrong Password'
-                              ? 'Contraseña incorrecta'
-                              : 'Ha ocurrido un error durante el inicio de sesión',
+                                ? 'Contraseña incorrecta'
+                                : 'Ha ocurrido un error durante el inicio de sesión',
                 });
             } else if (res?.ok) {
                 toast.success('Inicio de sesión exitoso', {
@@ -130,9 +130,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                         onClick={() => setPasswordHidden(!isPasswordHidden)}
                                     >
                                         {isPasswordHidden ? (
-                                            <Eye className="h-4 w-4 cursor-pointer text-gray-400" />
+                                            <Eye className="h-4 w-4 cursor-pointer text-gray-400"/>
                                         ) : (
-                                            <EyeOff className="h-4 w-4 cursor-pointer text-gray-400" />
+                                            <EyeOff className="h-4 w-4 cursor-pointer text-gray-400"/>
                                         )}
                                     </button>
                                 </div>
@@ -153,9 +153,17 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                     </form>
                 </CardContent>
             </Card>
-            <div className="text-muted-foreground [&_a]:hover:text-primary text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4">
-                By clicking continue, you agree to our <a href="/oyto">Terms of Service</a> and{' '}
-                <Link href="#">Privacy Policy</Link>.
+            {/* Footer con información adicional */}
+            <div className="text-center">
+                <p className="text-[12px] leading-relaxed text-gray-600">
+                    ¿Necesitas ayuda? Contacta a{' '}
+                    <a
+                        href="mailto:catabilleke@gmail.com"
+                        className="text-fucsia font-medium hover:underline"
+                    >
+                        catabilleke@gmail.com
+                    </a>
+                </p>
             </div>
         </div>
     );
