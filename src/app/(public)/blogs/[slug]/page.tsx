@@ -33,6 +33,10 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
             images: blog.image ? [blog.image] : [],
             url: `https://www.barcodepapel.cl/blogs/${slug}`,
             type: 'article',
+            siteName: 'Barco de Papel',
+            locale: 'es_ES',
+            publishedTime: blog.createdAt,
+            authors: [blog.author],
         },
         twitter: {
             card: 'summary_large_image',
