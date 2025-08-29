@@ -1,67 +1,19 @@
-'use server';
+// Archivo legacy - mantenido por compatibilidad
+// El nuevo sistema está en /src/lib/auth/password/
 
-import bcrypt from 'bcrypt';
-import prisma from '@/lib/db/db';
+import { recoverPassword as newRecoverPassword } from '@/lib/auth/password/passwordService';
 
-function generateRandomPassword(length = 12) {
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-    let password = '';
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * charset.length);
-        password += charset[randomIndex];
-    }
-    return password;
-}
-
+/**
+ * @deprecated Usar recoverUserPassword de /lib/auth/password/passwordService
+ * Mantenido por compatibilidad con componentes existentes
+ */
 export async function recoverPassword(email: string) {
-    try {
-        // Verificar si el usuario existe
-        const user = await prisma.user.findUnique({
-            where: { email },
-        });
+    console.log('⚠️ Usando método legacy recoverPassword, considera migrar al nuevo sistema');
 
-        if (!user) {
-            return { message: 'Error: No se encontró un usuario con ese email' };
-        }
+    const result = await newRecoverPassword(email);
 
-        // Generar nueva contraseña
-        const newPassword = generateRandomPassword();
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // Actualizar la contraseña en la base de datos
-        await prisma.user.update({
-            where: { email },
-            data: { password: hashedPassword },
-        });
-
-        // Importar Brevo de manera correcta
-        const brevoModule = await import('@getbrevo/brevo');
-
-        // Crear la instancia de la API
-        const apiKey = process.env.BREVO_API_KEY || '';
-        const apiInstance = new brevoModule.TransactionalEmailsApi();
-
-        // Configurar la clave API
-        const apiKeyInstance = brevoModule.TransactionalEmailsApiApiKeys.apiKey;
-        apiInstance.setApiKey(apiKeyInstance, apiKey);
-
-        // Configurar el email
-        const sendSmtpEmail = new brevoModule.SendSmtpEmail();
-        sendSmtpEmail.subject = 'Recuperación de Contraseña';
-        sendSmtpEmail.to = [{ email: email }];
-        sendSmtpEmail.sender = { name: 'Chubby Dashboard', email: 'crowadvancegx@gmail.com' };
-        sendSmtpEmail.htmlContent = `
-          <h1>Recuperación de Contraseña</h1>
-          <p>Tu nueva contraseña es: <strong>${newPassword}</strong></p>
-          <p>Por favor, cámbiala después de iniciar sesión.</p>
-        `;
-
-        // Enviar el email
-        await apiInstance.sendTransacEmail(sendSmtpEmail);
-
-        return { message: 'Se ha enviado una nueva contraseña a tu email' };
-    } catch (error) {
-        console.error('Error en recoverPassword:', error);
-        return { message: 'Error: No se pudo procesar la solicitud' };
-    }
+    // Convertir formato de respuesta para compatibilidad
+    return {
+        message: result.success ? result.message : `Error: ${result.message}`,
+    };
 }

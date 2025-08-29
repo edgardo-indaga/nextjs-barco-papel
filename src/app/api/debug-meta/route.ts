@@ -6,21 +6,21 @@ import { createMetaDescription } from '@/lib/utils';
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
-    
+
     if (!slug) {
         return NextResponse.json({ error: 'Slug requerido' }, { status: 400 });
     }
-    
+
     try {
         const blog = await getBlogBySlug(slug);
-        
+
         if (!blog) {
             return NextResponse.json({ error: 'Blog no encontrado' }, { status: 404 });
         }
-        
+
         // Crear descripción limpia
         const cleanDescription = createMetaDescription(blog.description, 160);
-        
+
         return NextResponse.json({
             success: true,
             data: {
@@ -52,15 +52,17 @@ export async function GET(request: NextRequest) {
                         description: cleanDescription,
                         images: blog.image ? [blog.image] : [],
                     },
-                }
-            }
+                },
+            },
         });
-        
     } catch (error) {
         console.error('Error en debug-meta:', error);
-        return NextResponse.json({ 
-            error: 'Error interno del servidor',
-            details: error instanceof Error ? error.message : 'Error desconocido'
-        }, { status: 500 });
+        return NextResponse.json(
+            {
+                error: 'Error interno del servidor',
+                details: error instanceof Error ? error.message : 'Error desconocido',
+            },
+            { status: 500 },
+        );
     }
 }
