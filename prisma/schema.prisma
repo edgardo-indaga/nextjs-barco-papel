@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        String     @id @default(uuid())
+    email     String     @unique
+    name      String
+    lastName  String
+    birthdate DateTime?
+    phone     String?
+    address   String?
+    city      String?
+    password  String
+    image     String?
+    state     Int?
+    createdAt DateTime   @default(now())
+    roles     UserRole[]
+
+    @@index([email])
+    @@index([name])
+    @@index([lastName])
+}
+
+model Role {
+    id             String           @id @default(uuid())
+    name           String           @unique
+    state          Int              @default(1)
+    createdAt      DateTime         @default(now())
+    users          UserRole[]
+    permissionRole PermissionRole[]
+    pageRoles      PageRole[]
+
+    @@index([name])
+}
+
+model UserRole {
+    id        String   @id @default(uuid())
+    userId    String?
+    roleId    String?
+    role      Role?    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+}
+
+model AuditLog {
+    id          String   @id @default(uuid())
+    userId      String? // ID del usuario que realizó la acción (puede ser nulo para acciones del sistema)
+    userName    String? // Nombre del usuario para referencia rápida
+    action      String // Tipo de acción (login, logout, create_role, update_permissions, etc.)
+    entity      String? // Entidad afectada (User, Role, Permission, etc.)
+    entityId    String? // ID de la entidad afectada
+    description String // Descripción detallada de la acción
+    ipAddress   String? // Dirección IP desde donde se realizó la acción
+    userAgent   String? // Navegador/dispositivo utilizado
+    metadata    Json? // Datos adicionales en formato JSON (cambios realizados, etc.)
+    createdAt   DateTime @default(now())
+
+    @@index([userId])
+    @@index([action])
+    @@index([entity, entityId])
+    @@index([createdAt])
+}
+
+enum TicketStatus {
+    OPEN
+    IN_PROGRESS
+    RESOLVED
+    CLOSED
+}
+
+enum TicketPriority {
+    LOW
+    MEDIUM
+    HIGH
+    URGENT
+}
+
+model Ticket {
+    id           String          @id @default(uuid())
+    code         String
+    title        String
+    description  String?
+    image        String?
+    userId       String
+    userName     String
+    userLastName String
+    status       TicketStatus    @default(OPEN)
+    priority     TicketPriority  @default(LOW)
+    createdAt    DateTime        @default(now())
+    updatedAt    DateTime        @updatedAt
+    comments     TicketComment[]
+}
+
+model TicketComment {
+    id           String   @id @default(uuid())
+    content      String
+    ticketId     String
+    userId       String
+    userName     String
+    userLastName String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    ticket       Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+    @@index([ticketId])
+    @@index([userId])
+}
+
+model Permission {
+    id             String           @id @default(uuid())
+    name           String           @unique
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+    permissionRole PermissionRole[]
+}
+
+model PermissionRole {
+    id           String      @id @default(uuid())
+    roleId       String?
+    permissionId String?
+    role         Role?       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    permission   Permission? @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+    createdAt    DateTime    @default(now())
+
+    @@unique([roleId, permissionId])
+}
+
+model Page {
+    id          String     @id @default(uuid())
+    name        String // Nombre descriptivo de la página
+    path        String     @unique // Ruta de la página (ej: /admin/dashboard)
+    description String? // Descripción opcional de la página
+    state       Int        @default(1) // Estado de la página (activo/inactivo)
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    pageRoles   PageRole[]
+}
+
+model PageRole {
+    id        String    @id @default(uuid())
+    pageId    String
+    roleId    String
+    page      Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+    role      Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    @@unique([pageId, roleId])
+}
+
+model Blog {
+    id                String         @id @default(uuid())
+    name              String
+    slug              String         @unique
+    image             String?
+    primaryCategoryId String
+    primaryCategory   Category       @relation(fields: [primaryCategoryId], references: [id], onDelete: Cascade)
+    author            String
+    description       String
+    createdAt         DateTime       @default(now())
+    updatedAt         DateTime?      @updatedAt
+    BlogCategory      BlogCategory[]
+
+    @@index([name])
+    @@index([slug])
+}
+
+model Category {
+    id           String         @id @default(uuid())
+    name         String
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime?      @updatedAt
+    BlogCategory BlogCategory[]
+    Blog         Blog[]
+
+    @@index([name])
+}
+
+model BlogCategory {
+    id         String    @id @default(uuid())
+    blogId     String?
+    categoryId String?
+    createdAt  DateTime  @default(now())
+    blog       Blog?     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+    category   Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    @@unique([blogId, categoryId])
+}
+
+model Teams {
+    id          String    @id @default(uuid())
+    name        String
+    image       String?
+    description String
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime? @updatedAt
+
+    @@index([name])
+}
+
+model EventeCalendar {
+    id              String          @id @default(uuid())
+    name            String
+    image           String?
+    date            DateTime
+    venue           String?
+    eventDays       String?
+    showTime        String?
+    audienceType    String?
+    price           String?
+    state           Int             @default(1)
+    linkUrl         String?
+    eventCategoryId String
+    eventCategory   EventCategories @relation(fields: [eventCategoryId], references: [id], onDelete: Cascade)
+    createdAt       DateTime        @default(now())
+    updatedAt       DateTime?       @updatedAt
+
+    @@index([name])
+}
+
+model EventCategories {
+    id             String           @id @default(uuid())
+    name           String
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime?        @updatedAt
+    EventeCalendar EventeCalendar[]
+}
+
+model PrintedMaterial {
+    id            String    @id @default(uuid())
+    image         String?
+    numberVersion Int
+    name          String
+    description   String
+    link          String
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime? @updatedAt
+
+    @@index([name])
+}
+
+model Sponsors {
+    id        String    @id @default(uuid())
+    name      String
+    image     String?
+    link      String?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+
+    @@index([name])
+}
