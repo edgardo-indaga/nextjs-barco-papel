@@ -2,12 +2,12 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { verifyAuth } from '@/lib/auth';
 import { isPublicPath, isStaticPath } from '@/lib/auth/publicPaths';
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
 
-    // console.log('Middleware - Checking path:', pathname);
-    // console.log('Middleware - Is public path:', isPublicPath(pathname));
-    // console.log('Middleware - Is static path:', isStaticPath(pathname));
+    // console.log('Proxy - Checking path:', pathname);
+    // console.log('Proxy - Is public path:', isPublicPath(pathname));
+    // console.log('Proxy - Is static path:', isStaticPath(pathname));
 
     // Permitir rutas públicas y estáticas
     if (isPublicPath(pathname) || isStaticPath(pathname)) {
@@ -17,11 +17,11 @@ export async function middleware(req: NextRequest) {
     // Verificar el token de autenticación
     const token = await verifyAuth(req);
     if (!token || !token.roles) {
-        // console.log('Middleware - No token or roles found');
+        // console.log('Proxy - No token or roles found');
         return NextResponse.redirect(new URL('/login', req.url));
     }
 
-    // console.log('Middleware - User roles:', token.roles);
+    // console.log('Proxy - User roles:', token.roles);
 
     // Permitir acceso al dashboard después del login
     if (pathname === '/admin/dashboard') {
@@ -32,7 +32,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
 }
 
-// Configurar las rutas que deben pasar por el middleware
+// Configurar las rutas que deben pasar por el proxy
 export const config = {
     matcher: ['/((?!api/uploadthing|_next/static|_next/image|favicon.ico).*)'],
 };
