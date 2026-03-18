@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Impresos from '@/components/Home/Impresos/Impresos';
 
+export const dynamic = 'force-dynamic';
+
 export default function RevistaImpresos() {
     const imageHeader = '/image-header-page.png';
     return (

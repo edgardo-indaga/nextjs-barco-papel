@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { getBlogBySlug } from '@/actions/Administration/Blogs/queries';
 import { createMetaDescription } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 interface BlogPageProps {
     params: Promise<{
         slug: string;

@@ -3,6 +3,8 @@ import { getBlogsWithFilter, getTotalBlogsCount } from '@/actions/Administration
 import { getAllCategories, getCategoryBySlug } from '@/actions/Administration/Categories/queries';
 import BlogsClient from '@/components/Public/BlogsClient/BlogsClient';
 
+export const dynamic = 'force-dynamic';
+
 interface BlogsPageProps {
     searchParams: Promise<{
         category?: string;
