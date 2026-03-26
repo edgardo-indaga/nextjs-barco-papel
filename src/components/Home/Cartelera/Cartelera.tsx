@@ -7,6 +7,7 @@ import {
     getEventMonthLimited,
 } from '@/actions/Administration/EventCalendars/queries';
 import type { EventeCalendarInterface } from '@/types/Administration/EventCalendars/EventeCalendarInterface';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 // Función para obtener la abreviación del mes en español
 function getMonthAbbreviation(dateString: string): string {
@@ -90,7 +91,7 @@ export default function Cartelera() {
                                 {event.image ? (
                                     <div className="relative h-[200px] w-full overflow-hidden rounded-[10px] border-2 border-black sm:h-[240px] md:h-[280px]">
                                         <Image
-                                            src={event.image}
+                                            src={getImageUrl(event.image)}
                                             alt={event.name}
                                             fill
                                             className="object-cover"

@@ -1,8 +1,8 @@
 'use server';
 
 import { TicketPriority, TicketStatus } from '@prisma/client';
-import { put } from '@vercel/blob';
 import { revalidatePath } from 'next/cache';
+import { uploadRawFile } from '@/lib/blob/uploadFile';
 import { getServerSession } from 'next-auth';
 import { logAuditEvent } from '@/lib/audit/auditLogger';
 import { AUDIT_ACTIONS, AUDIT_ENTITIES } from '@/lib/audit/auditType';
@@ -37,11 +37,7 @@ export async function createTicket(formData: FormData) {
         if (imageFile && imageFile.size > 0) {
             const fileExtension = imageFile.name.split('.').pop() || 'jpg';
             const fileName = `tickets/${code}-${Date.now()}.${fileExtension}`;
-            const blob = await put(fileName, imageFile, {
-                access: 'public',
-                token: process.env.BLOB_READ_WRITE_TOKEN,
-            });
-            imageUrl = blob.url;
+            imageUrl = await uploadRawFile(imageFile, fileName, imageFile.type);
         }
 
         const validStatuses = Object.values(TicketStatus);
@@ -220,11 +216,7 @@ export async function updateTicket(id: string, formData: FormData) {
         if (imageFile && imageFile.size > 0) {
             const fileExtension = imageFile.name.split('.').pop() || 'jpg';
             const fileName = `tickets/${currentTicket.code}-${Date.now()}.${fileExtension}`;
-            const blob = await put(fileName, imageFile, {
-                access: 'public',
-                token: process.env.BLOB_READ_WRITE_TOKEN,
-            });
-            updateData.image = blob.url;
+            updateData.image = await uploadRawFile(imageFile, fileName, imageFile.type);
         }
 
         // Actualizar el ticket

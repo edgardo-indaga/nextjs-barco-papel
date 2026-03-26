@@ -23,6 +23,7 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import useAuthStore from '@/store/authStore';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 const DynamicEditUserModal = dynamic(
     () => import('@/components/Modal/Setting/Users/EditUserModal'),
@@ -70,7 +71,7 @@ export default function NavUser() {
                             >
                                 <Avatar className="h-8 w-8 rounded-lg">
                                     <AvatarImage
-                                        src={avatar}
+                                        src={getImageUrl(avatar)}
                                         alt={
                                             session?.user
                                                 ? `${session.user.name} ${session.user.lastName}`
@@ -104,7 +105,7 @@ export default function NavUser() {
                                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                     <Avatar className="h-8 w-8 rounded-lg">
                                         <AvatarImage
-                                            src={avatar}
+                                            src={getImageUrl(avatar)}
                                             alt={
                                                 session?.user
                                                     ? `${session.user.name} ${session.user.lastName}`

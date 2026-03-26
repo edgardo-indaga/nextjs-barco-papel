@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { EditModalPropsAlt } from '@/types/settings/Generic/InterfaceGeneric';
 import type { UserQueryWithDetails } from '@/types/settings/Users/UsersInterface';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -223,7 +224,7 @@ export default function EditUserModal({
 
                         <div className="col-span-1 pl-[20px]">
                             <Image
-                                src={imagePreview}
+                                src={getImageUrl(imagePreview)}
                                 width={220}
                                 height={220}
                                 alt="Vista previa de la imagen"

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { getAllSponsorsForCarousel } from '@/actions/Administration/Sponsors/queries';
 import type { SponsorsCarouselInterface } from '@/types/Administration/Sponsors/SponsorsCarouselInterface';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 export default function CarouselSponsors() {
     const [originalSponsors, setOriginalSponsors] = useState<SponsorsCarouselInterface[]>([]);
@@ -130,7 +131,7 @@ export default function CarouselSponsors() {
                                     >
                                         {sponsor.image ? (
                                             <Image
-                                                src={sponsor.image}
+                                                src={getImageUrl(sponsor.image)}
                                                 alt={sponsor.name}
                                                 width={200}
                                                 height={96}
@@ -148,7 +149,7 @@ export default function CarouselSponsors() {
                                     <div className="h-16 w-full sm:h-20 md:h-24">
                                         {sponsor.image ? (
                                             <Image
-                                                src={sponsor.image}
+                                                src={getImageUrl(sponsor.image)}
                                                 alt={sponsor.name}
                                                 width={200}
                                                 height={96}

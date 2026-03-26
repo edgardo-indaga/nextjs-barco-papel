@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getBlogBySlug } from '@/actions/Administration/Blogs/queries';
 import { createMetaDescription } from '@/lib/utils';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
         openGraph: {
             title: blog.name,
             description: cleanDescription,
-            images: blog.image ? [blog.image] : [],
+            images: blog.image ? [getImageUrl(blog.image)] : [],
             url: `https://www.barcodepapel.cl/blogs/${slug}`,
             type: 'article',
             siteName: 'Barco de Papel',
@@ -44,7 +45,7 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
             card: 'summary_large_image',
             title: blog.name,
             description: cleanDescription,
-            images: blog.image ? [blog.image] : [],
+            images: blog.image ? [getImageUrl(blog.image)] : [],
         },
     };
 }
@@ -94,7 +95,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
             {blog.image && (
                 <div className="relative mb-8 h-[300px] w-full overflow-hidden rounded-[12px] border-2 border-black sm:h-[400px] md:mb-10 md:h-[500px] lg:h-[600px]">
                     <Image
-                        src={blog.image}
+                        src={getImageUrl(blog.image)}
                         alt={blog.name}
                         fill
                         className="object-cover"

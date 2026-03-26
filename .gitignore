@@ -38,6 +38,7 @@ yarn-error.log*
 
 # IDE y editores
 .idea/
+.claude/
 
 # Otros
 /certs
@@ -47,3 +48,4 @@ prisma/migrations/
 prisma/sql/
 
 certificates
+/vercel-blob-backup/

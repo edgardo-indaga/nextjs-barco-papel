@@ -1,7 +1,7 @@
 'use server';
 
-import { put } from '@vercel/blob';
 import bcrypt from 'bcrypt';
+import { uploadRawFile } from '@/lib/blob/uploadFile';
 import { revalidatePath } from 'next/cache';
 import { getServerSession } from 'next-auth';
 import { logAuditEvent } from '@/lib/audit/auditLogger';
@@ -39,11 +39,7 @@ export async function createUser(formData: FormData) {
         if (imageFile && imageFile.size > 0) {
             const fileExtension = imageFile.name.split('.').pop() || 'jpg';
             const fileName = `profile/${email.replace('@', '-at-')}-${Date.now()}.${fileExtension}`;
-            const blob = await put(fileName, imageFile, {
-                access: 'public',
-                token: process.env.BLOB_READ_WRITE_TOKEN,
-            });
-            imageUrl = blob.url;
+            imageUrl = await uploadRawFile(imageFile, fileName, imageFile.type);
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -177,11 +173,7 @@ export async function updateUser(id: string, formData: FormData) {
         if (imageFile && imageFile.size > 0) {
             const fileExtension = imageFile.name.split('.').pop() || 'jpg';
             const fileName = `profile/${id}-${Date.now()}.${fileExtension}`;
-            const blob = await put(fileName, imageFile, {
-                access: 'public',
-                token: process.env.BLOB_READ_WRITE_TOKEN,
-            });
-            data.image = blob.url;
+            data.image = await uploadRawFile(imageFile, fileName, imageFile.type);
         }
 
         const userUpdated = await prisma.user.update({

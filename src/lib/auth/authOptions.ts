@@ -5,6 +5,7 @@ import prisma from '@/dbprisma/db';
 import { logAuditEvent } from '@/lib/audit/auditLogger';
 import { AUDIT_ACTIONS, AUDIT_ENTITIES } from '@/lib/audit/auditType';
 import type { CustomUser } from '@/types/settings/Login/CustomUser';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -121,7 +122,7 @@ export const authOptions: NextAuthOptions = {
                     phone: userFound.phone || undefined,
                     address: userFound.address || undefined,
                     city: userFound.city || undefined,
-                    image: userFound.image || undefined,
+                    image: getImageUrl(userFound.image),
                     state: userFound.state || null,
                     roles,
                     permissions,

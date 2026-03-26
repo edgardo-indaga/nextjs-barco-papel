@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { createMaterial } from '@/actions/Administration/PrintedMaterials';
 import BtnActionNew from '@/components/BtnActionNew/BtnActionNew';
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -180,7 +181,7 @@ export default function NewPrintedMaterialModal({ refreshAction }: UpdateData) {
                         </div>
                         <div className="col-span-1">
                             <Image
-                                src={imagePreview}
+                                src={getImageUrl(imagePreview)}
                                 width={220}
                                 height={220}
                                 alt="Vista previa de la imagen"

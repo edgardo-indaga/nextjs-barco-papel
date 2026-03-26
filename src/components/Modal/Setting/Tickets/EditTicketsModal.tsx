@@ -31,6 +31,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { EditModalPropsAlt } from '@/types/settings/Generic/InterfaceGeneric';
 import type { GetTicketQuery } from '@/types/settings/Tickets/TicketInterface';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -244,7 +245,7 @@ export default function EditTicketsModal({
                                 </div>
                                 <div className="col-span-2 mb-[15px]">
                                     <Image
-                                        src={imagePreview}
+                                        src={getImageUrl(imagePreview)}
                                         width={415}
                                         height={420}
                                         alt="Vista previa de la imagen"

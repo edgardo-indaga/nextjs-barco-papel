@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBlogBySlug } from '@/actions/Administration/Blogs/queries';
 import { createMetaDescription } from '@/lib/utils';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 // API route para debug de meta tags
 export async function GET(request: NextRequest) {
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
                 cleanDescription: cleanDescription,
                 descriptionLength: cleanDescription.length,
                 author: blog.author,
-                image: blog.image,
+                image: getImageUrl(blog.image),
                 url: `https://www.barcodepapel.cl/blogs/${slug}`,
                 metaTags: {
                     title: `${blog.name} | Barco de Papel`,
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
                     openGraph: {
                         title: blog.name,
                         description: cleanDescription,
-                        images: blog.image ? [blog.image] : [],
+                        images: blog.image ? [getImageUrl(blog.image)] : [],
                         url: `https://www.barcodepapel.cl/blogs/${slug}`,
                         type: 'article',
                         siteName: 'Barco de Papel',
@@ -50,7 +51,7 @@ export async function GET(request: NextRequest) {
                         card: 'summary_large_image',
                         title: blog.name,
                         description: cleanDescription,
-                        images: blog.image ? [blog.image] : [],
+                        images: blog.image ? [getImageUrl(blog.image)] : [],
                     },
                 },
             },

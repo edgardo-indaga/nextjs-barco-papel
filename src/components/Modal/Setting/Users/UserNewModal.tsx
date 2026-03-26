@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { createUser } from '@/actions/Settings/Users';
 import BtnActionNew from '@/components/BtnActionNew/BtnActionNew';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 import {
     Dialog,
@@ -223,7 +224,7 @@ export default function UserNewModal({ refreshAction }: UpdateData) {
                         </div>
                         <div className="col-span-1 pl-[20px]">
                             <Image
-                                src={imagePreview}
+                                src={getImageUrl(imagePreview)}
                                 width={220}
                                 height={220}
                                 alt="Vista previa de la imagen"

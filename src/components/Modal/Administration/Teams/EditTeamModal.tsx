@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { TeamsInterface } from '@/types/Administration/Teams/TeamsInterface';
 import type { EditModalPropsAlt } from '@/types/settings/Generic/InterfaceGeneric';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 export default function EditTeamModal({
     id,
@@ -193,7 +194,7 @@ export default function EditTeamModal({
                         </div>
                         <div className="col-span-1 flex flex-col items-center">
                             <Image
-                                src={imagePreview}
+                                src={getImageUrl(imagePreview)}
                                 width={220}
                                 height={220}
                                 alt="Vista previa de la imagen"

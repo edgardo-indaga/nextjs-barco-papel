@@ -9,6 +9,7 @@ import { createEvent } from '@/actions/Administration/EventCalendars';
 import { getEventCategoriesForSelect } from '@/actions/Administration/EventCategories';
 import BtnActionNew from '@/components/BtnActionNew/BtnActionNew';
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -340,7 +341,7 @@ export default function NewEventCalendarModal({ refreshAction }: UpdateData) {
 
                         <div className="col-span-1">
                             <Image
-                                src={imagePreview}
+                                src={getImageUrl(imagePreview)}
                                 width={220}
                                 height={220}
                                 alt="Vista previa de la imagen"

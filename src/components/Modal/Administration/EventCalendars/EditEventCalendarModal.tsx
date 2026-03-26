@@ -33,6 +33,7 @@ import type {
     EventeCalendarUniqueInterface,
 } from '@/types/Administration/EventCalendars/EventeCalendarInterface';
 import type { EditModalPropsAlt } from '@/types/settings/Generic/InterfaceGeneric';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 interface EventCategory {
     id: string;
@@ -380,7 +381,7 @@ export default function EditEventCalendarModal({
                         </div>
                         <div className="col-span-1 flex flex-col items-center">
                             <Image
-                                src={imagePreview}
+                                src={getImageUrl(imagePreview)}
                                 width={220}
                                 height={220}
                                 alt="Vista previa de la imagen"

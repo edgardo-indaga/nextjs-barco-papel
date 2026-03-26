@@ -11,6 +11,7 @@ import Paginator from '@/components/Home/Paginator/Paginator';
 import { generateCategorySlug } from '@/lib/utils/categoryUtils';
 import type { BlogInterface } from '@/types/Administration/Blogs/BlogInterface';
 import type { CategoryInterface } from '@/types/Administration/Blogs/CategoryInterface';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 interface BlogsClientProps {
     initialCategories: CategoryInterface[];
@@ -170,7 +171,7 @@ export default function BlogsClient({
                                             <Link href={`/blogs/${blog.slug}`}>
                                                 <div className="relative h-[200px] w-full overflow-hidden rounded-[10px] border-2 border-black transition-transform duration-200 group-hover:scale-[1.02] sm:h-[240px] md:h-[280px]">
                                                     <Image
-                                                        src={blog.image}
+                                                        src={getImageUrl(blog.image)}
                                                         alt={blog.name}
                                                         fill
                                                         className="object-cover"

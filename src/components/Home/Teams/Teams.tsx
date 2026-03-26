@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { getAllTeamsHome } from '@/actions/Administration/Teams/queries';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 export default async function Teams() {
     const teams = await getAllTeamsHome();
@@ -29,7 +30,12 @@ export default async function Teams() {
                     {/* Imagen con placeholder */}
                     <div className="relative mb-4 h-[200px] w-full overflow-hidden rounded-[10px] border-2 border-gray-300 sm:h-[240px] md:h-[280px]">
                         {team.image ? (
-                            <Image src={team.image} alt={team.name} fill className="object-cover" />
+                            <Image
+                                src={getImageUrl(team.image)}
+                                alt={team.name}
+                                fill
+                                className="object-cover"
+                            />
                         ) : (
                             <div className="flex h-full w-full items-center justify-center bg-gray-100">
                                 <div className="text-[48px] text-gray-400 sm:text-[56px] md:text-[64px]">

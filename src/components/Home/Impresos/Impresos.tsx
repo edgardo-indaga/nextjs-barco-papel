@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { getAllMaterialHome } from '@/actions/Administration/PrintedMaterials/queries';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 export default async function Impresos() {
     const materials = await getAllMaterialHome();
@@ -14,7 +15,7 @@ export default async function Impresos() {
                             {material.image ? (
                                 <div className="relative h-[200px] w-full overflow-hidden rounded-lg sm:h-[240px] sm:w-[240px] md:h-[300px] md:w-[300px]">
                                     <Image
-                                        src={material.image}
+                                        src={getImageUrl(material.image)}
                                         alt={material.name}
                                         fill
                                         className="object-cover"

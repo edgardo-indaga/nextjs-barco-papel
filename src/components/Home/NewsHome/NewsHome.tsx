@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { getPostFromHome } from '@/actions/Administration/Blogs/queries';
+import { getImageUrl } from '@/lib/image/getImageUrl';
 
 export default async function NewsHome() {
     try {
@@ -35,7 +36,7 @@ export default async function NewsHome() {
                         {post.image && (
                             <div className="relative h-[200px] w-full overflow-hidden rounded-[10px] border-2 border-black sm:h-[240px] md:h-[280px]">
                                 <Image
-                                    src={post.image}
+                                    src={getImageUrl(post.image)}
                                     alt={post.name}
                                     fill
                                     className="object-cover"
