@@ -94,6 +94,7 @@ export default function Cartelera() {
                                             src={getImageUrl(event.image)}
                                             alt={event.name}
                                             fill
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                             className="object-cover"
                                         />
                                     </div>

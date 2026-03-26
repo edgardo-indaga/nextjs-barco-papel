@@ -41,13 +41,13 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
 
     return (
         <main className="bg-web">
-            <section className="h-[200px] sm:h-[240px] md:h-[299px]">
+            <section className="relative h-[200px] sm:h-[240px] md:h-[299px]">
                 <Image
                     src={imageHeader}
                     alt="Imagen Header Page"
-                    width={2200}
-                    height={299}
-                    className="h-full w-full object-cover object-top"
+                    fill
+                    sizes="100vw"
+                    className="object-cover object-top"
                     priority
                 />
             </section>
@@ -63,13 +63,14 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                 />
             </div>
 
-            <div>
+            <div className="relative">
                 <Image
                     src={footerBarc}
                     alt="Footer Barco"
                     width={8000}
                     height={2866}
-                    className="h-auto w-[100vw]"
+                    className="w-[100vw]"
+                    style={{ height: 'auto' }}
                 />
             </div>
         </main>

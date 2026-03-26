@@ -16,6 +16,7 @@ export default function Footer() {
                             width={245}
                             height={91}
                             className="w-[120px] sm:w-[140px] md:w-[180px]"
+                            style={{ height: 'auto' }}
                         />
                     </div>
                     <div className="flex justify-center">
@@ -25,6 +26,7 @@ export default function Footer() {
                             width={341}
                             height={143}
                             className="w-[140px] sm:w-[180px] md:w-[220px]"
+                            style={{ height: 'auto' }}
                         />
                     </div>
                     <div className="flex justify-center sm:justify-end">

@@ -27,6 +27,7 @@ export default function AlterHeader() {
                                     height={147}
                                     sizes="(max-width: 768px) 120px, (max-width: 640px) 100px, 200px"
                                     className="w-[100px] sm:w-[120px] md:w-[200px]"
+                                    style={{ height: 'auto' }}
                                 />
                             </Link>
                         </div>

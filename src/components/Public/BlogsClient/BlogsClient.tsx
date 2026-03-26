@@ -174,6 +174,7 @@ export default function BlogsClient({
                                                         src={getImageUrl(blog.image)}
                                                         alt={blog.name}
                                                         fill
+                                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                                         className="object-cover"
                                                     />
                                                 </div>

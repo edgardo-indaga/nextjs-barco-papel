@@ -67,6 +67,7 @@ export default function HeaderWeb() {
                                     height={147}
                                     sizes="(max-width: 768px) 100vw, 200px"
                                     className="md:w-[200px]"
+                                    style={{ height: 'auto' }}
                                 />
                             </Link>
                         </div>

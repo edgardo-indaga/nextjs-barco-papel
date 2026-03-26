@@ -127,15 +127,15 @@ export default function CarouselSponsors() {
                                         href={sponsor.link}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="block h-16 w-full sm:h-20 md:h-24"
+                                        className="relative block h-16 w-full sm:h-20 md:h-24"
                                     >
                                         {sponsor.image ? (
                                             <Image
                                                 src={getImageUrl(sponsor.image)}
                                                 alt={sponsor.name}
-                                                width={200}
-                                                height={96}
-                                                className="h-full w-full object-contain"
+                                                fill
+                                                sizes="(max-width: 768px) 50vw, 25vw"
+                                                className="object-contain"
                                             />
                                         ) : (
                                             <div className="flex h-full w-full items-center justify-center">
@@ -146,14 +146,14 @@ export default function CarouselSponsors() {
                                         )}
                                     </a>
                                 ) : (
-                                    <div className="h-16 w-full sm:h-20 md:h-24">
+                                    <div className="relative h-16 w-full sm:h-20 md:h-24">
                                         {sponsor.image ? (
                                             <Image
                                                 src={getImageUrl(sponsor.image)}
                                                 alt={sponsor.name}
-                                                width={200}
-                                                height={96}
-                                                className="h-full w-full object-contain"
+                                                fill
+                                                sizes="(max-width: 768px) 50vw, 25vw"
+                                                className="object-contain"
                                             />
                                         ) : (
                                             <div className="flex h-full w-full items-center justify-center">

@@ -18,6 +18,7 @@ export default async function Impresos() {
                                         src={getImageUrl(material.image)}
                                         alt={material.name}
                                         fill
+                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 240px, 300px"
                                         className="object-cover"
                                     />
                                 </div>
