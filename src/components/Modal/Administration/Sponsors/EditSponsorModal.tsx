@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { getSponsorById, updateSponsor } from '@/actions/Administration/Sponsors';
 
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -39,6 +40,7 @@ export default function EditSponsorModal({
     } = useForm<SponsorsInterface>({ mode: 'onChange' });
 
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [originalImage, setOriginalImage] = useState<string>('/default.png');
     const [imagePreview, setImagePreview] = useState<string>('/default.png');
     const [sponsorData, setSponsorData] = useState<SponsorsInterface | null>(null);
@@ -134,22 +136,31 @@ export default function EditSponsorModal({
             formData.append('image', selectedImage);
         }
 
-        const response = await updateSponsor(id as string, formData);
+        setIsSubmitting(true);
+        try {
+            const response = await updateSponsor(id as string, formData);
 
-        if ('error' in response) {
-            setError(response.error);
-        } else {
-            toast.success('Sponsor Editado Correctamente', {
-                description: 'El sponsor se ha editado correctamente.',
-            });
-            refreshAction?.();
-            handleCloseModal();
+            if ('error' in response) {
+                setError(response.error);
+            } else {
+                toast.success('Sponsor Editado Correctamente', {
+                    description: 'El sponsor se ha editado correctamente.',
+                });
+                refreshAction?.();
+                handleCloseModal();
+            }
+        } catch (error) {
+            console.error(error);
+            setError('Error al actualizar el sponsor. Inténtalo de nuevo.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleCloseModal}>
-            <DialogContent className="overflow-hidden sm:max-w-[700px]">
+        <Dialog open={open} onOpenChange={isSubmitting ? undefined : handleCloseModal}>
+            <DialogContent className="relative overflow-hidden sm:max-w-[700px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Sponsor</DialogTitle>
                     <DialogDescription>
@@ -220,11 +231,11 @@ export default function EditSponsorModal({
                     {error && <p className="text-sm text-red-500">{error}</p>}
                     <DialogFooter className="items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline" onClick={handleCloseModal}>
+                            <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit label="Actualizar" />
+                        <BtnSubmit label="Actualizar" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

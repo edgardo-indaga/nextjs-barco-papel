@@ -3,6 +3,7 @@
 import { FilePenLine } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { createTeam } from '@/actions/Administration/Teams';
@@ -36,11 +37,13 @@ export default function NewTeamModal({ refreshAction }: UpdateData) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState('/default.png');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleOpenChange = (open: boolean) => {
+        if (isSubmitting) return;
         setIsOpen(open);
         if (!open) {
             reset();
@@ -79,6 +82,7 @@ export default function NewTeamModal({ refreshAction }: UpdateData) {
         if (selectedImage) {
             formData.append('image', selectedImage);
         }
+        setIsSubmitting(true);
         try {
             const response = await createTeam(formData);
 
@@ -99,13 +103,16 @@ export default function NewTeamModal({ refreshAction }: UpdateData) {
             setImagePreview('/team.jpg');
             setError('Error al crear el miembro. Inténtalo de nuevo.');
             console.error(error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nuevo" permission={['Crear']} />
-            <DialogContent className="overflow-hidden sm:max-w-[700px]">
+            <DialogContent className="relative overflow-hidden sm:max-w-[700px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nuevo Miembro del Equipo</DialogTitle>
                     <DialogDescription>
@@ -175,11 +182,11 @@ export default function NewTeamModal({ refreshAction }: UpdateData) {
                     {error && <p className="text-sm text-red-500">{error}</p>}
                     <DialogFooter className="items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline">
+                            <Button type="button" variant="outline" disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit label="Crear" />
+                        <BtnSubmit label="Crear" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

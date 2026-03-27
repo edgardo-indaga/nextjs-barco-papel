@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { getTeamById, updateTeam } from '@/actions/Administration/Teams';
 
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -40,6 +41,7 @@ export default function EditTeamModal({
     } = useForm<TeamsInterface>({ mode: 'onChange' });
 
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [originalImage, setOriginalImage] = useState<string>('/team.jpg');
     const [imagePreview, setImagePreview] = useState<string>('/team.jpg');
     const [teamData, setTeamData] = useState<TeamsInterface | null>(null);
@@ -134,21 +136,30 @@ export default function EditTeamModal({
             formData.append('image', selectedImage);
         }
 
-        const response = await updateTeam(id as string, formData);
-        if ('error' in response) {
-            setError(response.error);
-        } else {
-            refreshAction?.();
-            handleCloseModal();
-            toast.success('Editado Correctamente', {
-                description: 'El miembro se ha editado correctamente.',
-            });
+        setIsSubmitting(true);
+        try {
+            const response = await updateTeam(id as string, formData);
+            if ('error' in response) {
+                setError(response.error);
+            } else {
+                refreshAction?.();
+                handleCloseModal();
+                toast.success('Editado Correctamente', {
+                    description: 'El miembro se ha editado correctamente.',
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            setError('Error al actualizar el miembro. Inténtalo de nuevo.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleCloseModal}>
-            <DialogContent className="overflow-hidden sm:max-w-[700px]">
+        <Dialog open={open} onOpenChange={isSubmitting ? undefined : handleCloseModal}>
+            <DialogContent className="relative overflow-hidden sm:max-w-[700px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Miembro del Equipo</DialogTitle>
                     <DialogDescription>
@@ -219,11 +230,11 @@ export default function EditTeamModal({
                     {error && <p className="text-sm text-red-500">{error}</p>}
                     <DialogFooter className="items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline" onClick={handleCloseModal}>
+                            <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit label="Actualizar" />
+                        <BtnSubmit label="Actualizar" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

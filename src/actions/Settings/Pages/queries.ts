@@ -2,19 +2,6 @@
 
 import prisma from '@/lib/db/db';
 
-export interface Page {
-    id: string;
-    name: string;
-    path: string;
-    description: string | null;
-    pageRoles: Array<{
-        roleId: string;
-        role: {
-            name: string;
-        };
-    }>;
-}
-
 export async function getPages() {
     try {
         return await prisma.page.findMany({
@@ -39,6 +26,10 @@ export async function getPages() {
         throw error;
     }
 }
+
+// Tipo derivado directamente del resultado de Prisma para evitar divergencias
+export type Page = Awaited<ReturnType<typeof getPages>>[number];
+
 
 export async function checkPageAccess(path: string, roles: string[]) {
     try {

@@ -77,7 +77,10 @@ export async function POST(req: NextRequest) {
                 .end(uploadBuffer);
         });
 
-        return NextResponse.json({ url: `${result.public_id}.${result.format}` });
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+        return NextResponse.json({
+            url: `https://res.cloudinary.com/${cloudName}/image/upload/${result.public_id}.${result.format}`,
+        });
     } catch (error) {
         console.error('Error al subir la imagen:', error);
         return NextResponse.json({ error: 'Error al subir la imagen.' }, { status: 500 });

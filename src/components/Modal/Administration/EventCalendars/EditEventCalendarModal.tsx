@@ -9,6 +9,7 @@ import { getEventByIdForEdit, updateEvent } from '@/actions/Administration/Event
 import { getEventCategoriesForSelect } from '@/actions/Administration/EventCategories';
 
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -56,6 +57,7 @@ export default function EditEventCalendarModal({
     } = useForm<EventeCalendarInterface>({ mode: 'onChange' });
 
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState('/default.png');
     const [eventData, setEventData] = useState<EventeCalendarUniqueInterface | null>(null);
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -193,22 +195,31 @@ export default function EditEventCalendarModal({
             formData.append('image', selectedImage);
         }
 
-        const response = await updateEvent(id as string, formData);
+        setIsSubmitting(true);
+        try {
+            const response = await updateEvent(id as string, formData);
 
-        if ('error' in response) {
-            setError(response.error || 'Error desconocido');
-        } else {
-            toast.success('Evento Editado Correctamente', {
-                description: 'El evento se ha editado correctamente.',
-            });
-            refreshAction?.();
-            handleCloseModal();
+            if ('error' in response) {
+                setError(response.error || 'Error desconocido');
+            } else {
+                toast.success('Evento Editado Correctamente', {
+                    description: 'El evento se ha editado correctamente.',
+                });
+                refreshAction?.();
+                handleCloseModal();
+            }
+        } catch (error) {
+            console.error(error);
+            setError('Error al actualizar el evento. Inténtalo de nuevo.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleCloseModal}>
-            <DialogContent className="overflow-hidden sm:max-w-[800px]">
+        <Dialog open={open} onOpenChange={isSubmitting ? undefined : handleCloseModal}>
+            <DialogContent className="relative overflow-hidden sm:max-w-[800px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Evento</DialogTitle>
                     <DialogDescription>
@@ -406,11 +417,11 @@ export default function EditEventCalendarModal({
                     {error && <p className="text-sm text-red-500">{error}</p>}
                     <DialogFooter className="items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline" onClick={handleCloseModal}>
+                            <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit label="Actualizar" />
+                        <BtnSubmit label="Actualizar" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { createCategory } from '@/actions/Administration/Categories';
 import BtnActionNew from '@/components/BtnActionNew/BtnActionNew';
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
-
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -35,8 +35,10 @@ export default function NewCategoryModal({ refreshAction }: UpdateData) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleOpenChange = (open: boolean) => {
+        if (isSubmitting) return;
         setIsOpen(open);
         if (!open) {
             reset();
@@ -55,6 +57,7 @@ export default function NewCategoryModal({ refreshAction }: UpdateData) {
         const formData = new FormData();
         formData.append('name', data.name);
 
+        setIsSubmitting(true);
         try {
             const response = await createCategory(formData);
 
@@ -76,13 +79,16 @@ export default function NewCategoryModal({ refreshAction }: UpdateData) {
             toast.error('Crear Categoría Fallido', {
                 description: 'Error al intentar crear la categoría',
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nueva" permission={['Crear']} />
-            <DialogContent className="sm:max-w-[400px]">
+            <DialogContent className="relative sm:max-w-[400px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nueva Categoría</DialogTitle>
                     <DialogDescription>
@@ -105,11 +111,11 @@ export default function NewCategoryModal({ refreshAction }: UpdateData) {
                     {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
                     <DialogFooter className="mt-6 items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline">
+                            <Button type="button" variant="outline" disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit />
+                        <BtnSubmit isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { createMaterial } from '@/actions/Administration/PrintedMaterials';
 import BtnActionNew from '@/components/BtnActionNew/BtnActionNew';
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { getImageUrl } from '@/lib/image/getImageUrl';
 
 import { Button } from '@/components/ui/button';
@@ -36,11 +37,13 @@ export default function NewPrintedMaterialModal({ refreshAction }: UpdateData) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState('/default.png');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleOpenChange = (open: boolean) => {
+        if (isSubmitting) return;
         setIsOpen(open);
         if (!open) {
             reset();
@@ -87,6 +90,7 @@ export default function NewPrintedMaterialModal({ refreshAction }: UpdateData) {
         if (selectedImage) {
             formData.append('image', selectedImage);
         }
+        setIsSubmitting(true);
         try {
             const response = await createMaterial(formData);
 
@@ -107,13 +111,16 @@ export default function NewPrintedMaterialModal({ refreshAction }: UpdateData) {
             setImagePreview('/default.png');
             setError('Error al crear el material impreso. Inténtalo de nuevo.');
             console.error(error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nuevo" permission={['Crear']} />
-            <DialogContent className="overflow-hidden sm:max-w-[700px]">
+            <DialogContent className="relative overflow-hidden sm:max-w-[700px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nuevo Material Impreso</DialogTitle>
                     <DialogDescription>
@@ -207,11 +214,11 @@ export default function NewPrintedMaterialModal({ refreshAction }: UpdateData) {
                     {error && <p className="text-sm text-red-500">{error}</p>}
                     <DialogFooter className="items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline">
+                            <Button type="button" variant="outline" disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit label="Crear" />
+                        <BtnSubmit label="Crear" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

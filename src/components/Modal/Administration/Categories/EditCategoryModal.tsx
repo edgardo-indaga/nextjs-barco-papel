@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { getCategoryById, updateCategory } from '@/actions/Administration/Categories';
-
+import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -37,6 +38,7 @@ export default function EditCategoryModal({
     } = useForm<CategoryFormData>({ mode: 'onChange' });
 
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!open) {
@@ -72,6 +74,7 @@ export default function EditCategoryModal({
         const formData = new FormData();
         formData.append('name', data.name);
 
+        setIsSubmitting(true);
         try {
             const response = await updateCategory(id, formData);
             if ('error' in response) {
@@ -89,12 +92,15 @@ export default function EditCategoryModal({
             toast.error('Actualización Fallida', {
                 description: 'Error al intentar actualizar la categoría',
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={onCloseAction}>
-            <DialogContent className="overflow-hidden sm:max-w-[400px]">
+        <Dialog open={open} onOpenChange={isSubmitting ? undefined : onCloseAction}>
+            <DialogContent className="relative overflow-hidden sm:max-w-[400px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Categoría</DialogTitle>
                     <DialogDescription>
@@ -116,9 +122,7 @@ export default function EditCategoryModal({
                     </div>
                     {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
                     <DialogFooter className="mt-6 items-end">
-                        <Button type="submit" className="custom-button">
-                            Actualizar
-                        </Button>
+                        <BtnSubmit label="Actualizar" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

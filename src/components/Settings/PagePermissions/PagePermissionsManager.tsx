@@ -2,7 +2,7 @@
 
 import type { Column } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import {
     createPage,
@@ -13,6 +13,7 @@ import {
 import type { Page } from '@/actions/Settings/Pages/queries';
 import { getPages } from '@/actions/Settings/Pages/queries';
 import { getRoles } from '@/actions/Settings/Roles/queries';
+import { useStableFetch } from '@/hooks/useStableFetch';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -120,9 +121,20 @@ function ActionCell({ row, onEdit, onDelete }: ActionCellProps) {
 }
 
 export default function PagePermissionsManager() {
-    const [pages, setPages] = useState<Page[]>([]);
-    const [roles, setRoles] = useState<Role[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        data,
+        isLoading,
+        refetch: refetchData,
+    } = useStableFetch(() =>
+        Promise.all([getPages(), getRoles()]).then(([pagesData, rolesData]) => ({
+            pages: pagesData,
+            roles: rolesData,
+        })),
+    );
+
+    const pages = data?.pages ?? [];
+    const roles = data?.roles ?? [];
+
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [formData, setFormData] = useState<PageFormData>({
         name: '',
@@ -131,48 +143,23 @@ export default function PagePermissionsManager() {
     });
     const [editingPageId, setEditingPageId] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const fetchData = async () => {
-        try {
-            const [pagesData, rolesData] = await Promise.all([getPages(), getRoles()]);
-
-            setPages(pagesData);
-            setRoles(rolesData);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            toast.error('Error al cargar los datos');
-        } finally {
-            setIsLoading(false);
-        }
+        await refetchData();
     };
+
+
 
     const handlePermissionChange = async (pageId: string, roleId: string, isChecked: boolean) => {
         try {
             await updatePageRole(pageId, roleId, isChecked ? 'add' : 'remove');
-            setPages(
-                pages.map((page) => {
-                    if (page.id === pageId) {
-                        const role = roles.find((r) => r.id === roleId);
-                        if (!role) {
-                            throw new Error('Rol no encontrado');
-                        }
-                        const pageRoles = isChecked
-                            ? [...page.pageRoles, { roleId, role }]
-                            : page.pageRoles.filter((pr) => pr.roleId !== roleId);
-                        return { ...page, pageRoles };
-                    }
-                    return page;
-                }),
-            );
             toast.success('Permisos actualizados correctamente');
+            await refetchData();
         } catch (error) {
             console.error('Error updating permission:', error);
             toast.error('Error al actualizar los permisos');
         }
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

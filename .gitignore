@@ -49,3 +49,9 @@ prisma/sql/
 
 certificates
 /vercel-blob-backup/
+playwright/
+playwright-report/
+test-results/
+tests/
+backups/
+scripts/

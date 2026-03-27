@@ -79,7 +79,8 @@ export async function uploadFile({
                 .end(webpBuffer);
         });
 
-        return `${result.public_id}.${result.format}`;
+        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+        return `https://res.cloudinary.com/${cloudName}/image/upload/${result.public_id}.${result.format}`;
     } catch (error) {
         console.error('Error al subir el archivo:', error);
         throw new Error('Error al subir el archivo. Por favor, int\u00E9ntelo de nuevo.');
@@ -117,7 +118,8 @@ export async function uploadRawFile(
             .end(uploadBuffer);
     });
 
-    return `${result.public_id}.${result.format}`;
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    return `https://res.cloudinary.com/${cloudName}/image/upload/${result.public_id}.${result.format}`;
 }
 
 /**

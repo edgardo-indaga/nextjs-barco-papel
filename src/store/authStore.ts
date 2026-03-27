@@ -33,7 +33,7 @@ const API_SESSION_URL = '/api/auth/session';
 
 let fetchPromise: Promise<void> | null = null;
 
-const useAuthStore = create<AuthStore>((set) => ({
+const useAuthStore = create<AuthStore>((set, get) => ({
     session: null,
     isInitialized: false,
     isLoading: false,
@@ -47,6 +47,9 @@ const useAuthStore = create<AuthStore>((set) => ({
         }
     },
     fetchSession: async () => {
+        // Si ya está inicializado, no re-fetchear
+        if (get().isInitialized) return;
+
         // Si ya hay una petición en curso, esperar a que termine
         if (fetchPromise) {
             await fetchPromise;
@@ -57,34 +60,29 @@ const useAuthStore = create<AuthStore>((set) => ({
 
         try {
             fetchPromise = (async () => {
-                try {
-                    console.log('Fetching session...');
-                    const response = await fetch(API_SESSION_URL);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch session');
-                    }
-                    const data: Session = await response.json();
-                    console.log('Session fetched successfully');
+                const response = await fetch(API_SESSION_URL);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch session');
+                }
+                const data: Session = await response.json();
 
-                    set({ session: data, isInitialized: true });
+                // Actualización atómica: session + isInitialized + isLoading en un solo set()
+                set({ session: data, isInitialized: true, isLoading: false });
 
-                    if (data?.user?.permissions) {
-                        useUserPermissionStore.getState().setPermissions(data.user.permissions);
-                    }
-                    if (data?.user?.roles) {
-                        useUserPermissionStore.getState().setRoles(data.user.roles);
-                    }
-                } catch (error) {
-                    console.error('Failed to fetch session:', error);
-                    set({ session: null, isInitialized: true });
-                    throw error;
+                if (data?.user?.permissions) {
+                    useUserPermissionStore.getState().setPermissions(data.user.permissions);
+                }
+                if (data?.user?.roles) {
+                    useUserPermissionStore.getState().setRoles(data.user.roles);
                 }
             })();
 
             await fetchPromise;
+        } catch (error) {
+            console.error('Failed to fetch session:', error);
+            set({ session: null, isInitialized: true, isLoading: false });
         } finally {
             fetchPromise = null;
-            set({ isLoading: false });
         }
     },
 }));

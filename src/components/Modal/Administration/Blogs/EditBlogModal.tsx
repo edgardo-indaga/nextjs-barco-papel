@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { getPostById, updatePost } from '@/actions/Administration/Blogs';
 import { getAllCategories } from '@/actions/Administration/Categories';
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -57,6 +58,7 @@ export default function EditBlogModal({
     });
 
     const [serverError, setServerError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [originalImage, setOriginalImage] = useState<string>('/default.png');
     const [imagePreview, setImagePreview] = useState<string>('/default.png');
     const [blogData, setBlogData] = useState<BlogUniqueInterface | null>(null);
@@ -210,6 +212,7 @@ export default function EditBlogModal({
             formData.append('image', selectedImage);
         }
 
+        setIsSubmitting(true);
         try {
             const response = await updatePost(id as string, formData);
 
@@ -229,12 +232,15 @@ export default function EditBlogModal({
             });
             setServerError('Error al editar el blog. Inténtalo de nuevo.');
             console.error(error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <Dialog open={open} onOpenChange={handleCloseModal}>
-            <DialogContent className="max-h-[90vh] overflow-hidden sm:max-w-[900px]">
+        <Dialog open={open} onOpenChange={isSubmitting ? undefined : handleCloseModal}>
+            <DialogContent className="relative max-h-[90vh] overflow-hidden sm:max-w-[900px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Blog</DialogTitle>
                     <DialogDescription>
@@ -355,11 +361,11 @@ export default function EditBlogModal({
                     {serverError && <p className="text-sm text-red-500">{serverError}</p>}
                     <DialogFooter className="items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline" onClick={handleCloseModal}>
+                            <Button type="button" variant="outline" onClick={handleCloseModal} disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit label="Actualizar" />
+                        <BtnSubmit label="Actualizar" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

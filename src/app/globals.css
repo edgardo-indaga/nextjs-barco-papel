@@ -2,6 +2,7 @@
 
 /* Asegúrate de que tailwindcss-animate esté instalado */
 @plugin 'tailwindcss-animate';
+@plugin '@tailwindcss/typography';
 
 :root {
     --font-inter: 'Inter', sans-serif;

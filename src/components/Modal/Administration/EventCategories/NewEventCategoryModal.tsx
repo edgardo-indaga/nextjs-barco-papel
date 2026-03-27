@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { createEventCategory } from '@/actions/Administration/EventCategories';
 import BtnActionNew from '@/components/BtnActionNew/BtnActionNew';
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -35,8 +36,10 @@ export default function NewEventCategoryModal({ refreshAction }: UpdateData) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [error, setError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleOpenChange = (open: boolean) => {
+        if (isSubmitting) return;
         setIsOpen(open);
         if (!open) {
             reset();
@@ -55,6 +58,7 @@ export default function NewEventCategoryModal({ refreshAction }: UpdateData) {
         const formData = new FormData();
         formData.append('name', data.name);
 
+        setIsSubmitting(true);
         try {
             const response = await createEventCategory(formData);
 
@@ -78,13 +82,16 @@ export default function NewEventCategoryModal({ refreshAction }: UpdateData) {
             toast.error('Crear Categoría de Evento Fallido', {
                 description: 'Error al intentar crear la categoría de evento',
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nueva" permission={['Crear']} />
-            <DialogContent className="sm:max-w-[400px]">
+            <DialogContent className="relative sm:max-w-[400px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nueva Categoría de Evento</DialogTitle>
                     <DialogDescription>
@@ -107,11 +114,11 @@ export default function NewEventCategoryModal({ refreshAction }: UpdateData) {
                     {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
                     <DialogFooter className="mt-6 items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline">
+                            <Button type="button" variant="outline" disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit />
+                        <BtnSubmit isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>

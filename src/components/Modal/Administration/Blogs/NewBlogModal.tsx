@@ -9,6 +9,7 @@ import { createPost } from '@/actions/Administration/Blogs';
 import { getAllCategories } from '@/actions/Administration/Categories';
 import BtnActionNew from '@/components/BtnActionNew/BtnActionNew';
 import BtnSubmit from '@/components/BtnSubmit/BtnSubmit';
+import FormLoadingOverlay from '@/components/FormLoadingOverlay/FormLoadingOverlay';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -54,6 +55,7 @@ export default function NewBlogModal({ refreshAction }: UpdateData) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [serverError, setServerError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [imagePreview, setImagePreview] = useState('/default.png');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [categories, setCategories] = useState<CategoryInterface[]>([]);
@@ -82,6 +84,7 @@ export default function NewBlogModal({ refreshAction }: UpdateData) {
     }, []);
 
     const handleOpenChange = (open: boolean) => {
+        if (isSubmitting) return;
         setIsOpen(open);
         if (!open) {
             reset();
@@ -161,6 +164,7 @@ export default function NewBlogModal({ refreshAction }: UpdateData) {
             formData.append('image', selectedImage);
         }
 
+        setIsSubmitting(true);
         try {
             const response = await createPost(formData);
 
@@ -183,13 +187,16 @@ export default function NewBlogModal({ refreshAction }: UpdateData) {
             setDescription('');
             setServerError('Error al crear el blog. Inténtalo de nuevo.');
             console.error(error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nuevo" permission={['Crear']} />
-            <DialogContent className="max-h-[90vh] overflow-hidden sm:max-w-[900px]">
+            <DialogContent className="relative max-h-[90vh] overflow-hidden sm:max-w-[900px]">
+                <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nuevo Blog</DialogTitle>
                     <DialogDescription>
@@ -306,11 +313,11 @@ export default function NewBlogModal({ refreshAction }: UpdateData) {
                     {serverError && <p className="text-sm text-red-500">{serverError}</p>}
                     <DialogFooter className="items-end">
                         <DialogClose asChild>
-                            <Button type="button" variant="outline">
+                            <Button type="button" variant="outline" disabled={isSubmitting}>
                                 Cancelar
                             </Button>
                         </DialogClose>
-                        <BtnSubmit label="Crear" />
+                        <BtnSubmit label="Crear" isLoading={isSubmitting} />
                     </DialogFooter>
                 </form>
             </DialogContent>
