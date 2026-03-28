@@ -114,7 +114,7 @@ export default function NewSponsorModal({ refreshAction }: UpdateData) {
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nuevo" permission={['Crear']} />
-            <DialogContent className="relative overflow-hidden sm:max-w-[700px]">
+            <DialogContent className="overflow-hidden sm:max-w-[700px]">
                 <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nuevo Sponsors</DialogTitle>

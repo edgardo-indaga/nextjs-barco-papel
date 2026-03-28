@@ -4,9 +4,11 @@ import Highlight from '@tiptap/extension-highlight';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
+import Youtube from '@tiptap/extension-youtube';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { useEffect, useState } from 'react';
+import { IframeExtension } from './extensions/iframe-extension';
 import MenuBar from './menu-bar';
 
 interface RichTextEditorProps {
@@ -24,6 +26,7 @@ export default function RichTextEditor({
     const [charCount, setCharCount] = useState(0);
 
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit.configure({
                 bulletList: {
@@ -42,6 +45,14 @@ export default function RichTextEditor({
             }),
             Highlight,
             Image,
+            Youtube.configure({
+                width: 0,
+                height: 480,
+                HTMLAttributes: {
+                    class: 'w-full rounded',
+                },
+            }),
+            IframeExtension,
             Link.configure({
                 openOnClick: true,
                 autolink: true,

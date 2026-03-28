@@ -239,7 +239,7 @@ export default function EditBlogModal({
 
     return (
         <Dialog open={open} onOpenChange={isSubmitting ? undefined : handleCloseModal}>
-            <DialogContent className="relative max-h-[90vh] overflow-hidden sm:max-w-[900px]">
+            <DialogContent className="max-h-[90vh] overflow-hidden sm:max-w-[900px]">
                 <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Blog</DialogTitle>

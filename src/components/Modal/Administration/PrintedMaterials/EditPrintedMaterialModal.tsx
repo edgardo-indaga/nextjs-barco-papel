@@ -167,7 +167,7 @@ export default function EditPrintedMaterialModal({
 
     return (
         <Dialog open={open} onOpenChange={isSubmitting ? undefined : handleCloseModal}>
-            <DialogContent className="relative overflow-hidden sm:max-w-[700px]">
+            <DialogContent className="overflow-hidden sm:max-w-[700px]">
                 <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Material Impreso</DialogTitle>

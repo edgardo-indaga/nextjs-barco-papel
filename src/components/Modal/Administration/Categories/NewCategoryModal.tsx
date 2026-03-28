@@ -87,7 +87,7 @@ export default function NewCategoryModal({ refreshAction }: UpdateData) {
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nueva" permission={['Crear']} />
-            <DialogContent className="relative sm:max-w-[400px]">
+            <DialogContent className="sm:max-w-[400px]">
                 <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nueva Categoría</DialogTitle>

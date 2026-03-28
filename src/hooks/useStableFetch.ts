@@ -24,12 +24,14 @@ export function useStableFetch<T>(
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     const abortControllerRef = useRef<AbortController | null>(null);
+    const fetchFnRef = useRef(fetchFn);
+    fetchFnRef.current = fetchFn;
 
     const executeFetch = useCallback(async (signal: AbortSignal) => {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await fetchFn();
+            const result = await fetchFnRef.current();
             if (!signal.aborted) {
                 setData(result);
             }
@@ -45,7 +47,7 @@ export function useStableFetch<T>(
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchFn, ...deps]);
+    }, deps);
 
     useEffect(() => {
         if (!enabled) {

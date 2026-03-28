@@ -99,7 +99,7 @@ export default function EditCategoryModal({
 
     return (
         <Dialog open={open} onOpenChange={isSubmitting ? undefined : onCloseAction}>
-            <DialogContent className="relative overflow-hidden sm:max-w-[400px]">
+            <DialogContent className="overflow-hidden sm:max-w-[400px]">
                 <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Editar Categoría</DialogTitle>

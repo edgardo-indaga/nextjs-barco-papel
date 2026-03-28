@@ -195,7 +195,7 @@ export default function NewBlogModal({ refreshAction }: UpdateData) {
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <BtnActionNew label="Nuevo" permission={['Crear']} />
-            <DialogContent className="relative max-h-[90vh] overflow-hidden sm:max-w-[900px]">
+            <DialogContent className="max-h-[90vh] overflow-hidden sm:max-w-[900px]">
                 <FormLoadingOverlay visible={isSubmitting} />
                 <DialogHeader>
                     <DialogTitle>Crear Nuevo Blog</DialogTitle>

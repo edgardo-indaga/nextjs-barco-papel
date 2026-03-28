@@ -4,6 +4,7 @@ import {
     AlignLeft,
     AlignRight,
     Bold,
+    FileText,
     Heading1,
     Heading2,
     Heading3,
@@ -14,6 +15,7 @@ import {
     List,
     ListOrdered,
     Strikethrough,
+    Youtube,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Toggle } from '../toggle';
@@ -177,6 +179,26 @@ export default function MenuBar({
             icon: <LinkIcon className="size-4" />,
             onClick: handleSetLink,
             preesed: editor.isActive('link'),
+        },
+        {
+            id: 'youtube',
+            icon: <Youtube className="size-4" />,
+            onClick: () => {
+                const url = window.prompt('Ingrese la URL del video (YouTube o Vimeo):');
+                if (!url) return;
+                editor.chain().focus().setYoutubeVideo({ src: url }).run();
+            },
+            preesed: editor.isActive('youtube'),
+        },
+        {
+            id: 'iframe',
+            icon: <FileText className="size-4" />,
+            onClick: () => {
+                const url = window.prompt('Ingrese la URL del PDF o página a embeber:');
+                if (!url) return;
+                editor.chain().focus().setIframe({ src: url }).run();
+            },
+            preesed: false,
         },
     ];
 
